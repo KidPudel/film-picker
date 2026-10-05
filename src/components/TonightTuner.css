@@ -20,13 +20,13 @@
   text-wrap: balance;
   text-shadow: 0 2px 40px rgb(0 0 0 / 0.75);
 }
-/* The light stays around the words, not behind them: a calm pool of dark under the sentence. */
+/* Support the words without cutting a wide dark hole through the light shafts. */
 .tuner__sentence::before {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: -18% -14%;
-  background: radial-gradient(closest-side, rgb(9 9 11 / 0.82), rgb(9 9 11 / 0.6) 55%, transparent);
+  inset: -6% -4%;
+  background: radial-gradient(closest-side, rgb(9 9 11 / 0.42), rgb(9 9 11 / 0.22) 55%, transparent);
   pointer-events: none;
 }
 :root[data-theme='light'] .tuner__sentence {

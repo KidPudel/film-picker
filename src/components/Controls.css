@@ -47,8 +47,8 @@
   transform: scale(0.97);
 }
 .seg__opt[aria-checked='true'] {
-  background: var(--text-bright);
-  color: var(--bg);
+  background: var(--z4);
+  color: var(--text-bright);
   font-weight: 650;
 }
 @media (hover: hover) and (pointer: fine) {

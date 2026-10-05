@@ -1,24 +1,12 @@
-/* A reserved band: the projector paints the velvet seats here. */
+/* Page artwork: the browser scrolls these seats along with the surrounding content. */
 .seats {
   position: relative;
   pointer-events: none;
   height: clamp(6rem, 13vw, 11.5rem);
-}
-.seats__fallback {
-  display: none;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: #2a0610;
-}
-.no-webgl .seats__fallback {
-  display: block;
+  background: url('/cinema-seats.webp') center bottom / auto 100% repeat-x;
 }
 /* Lights on: the hall is lit, no foreground silhouettes needed. */
 :root[data-theme='light'] .seats {
   height: var(--s5);
-}
-:root[data-theme='light'] .seats__fallback {
-  display: none;
+  background: none;
 }

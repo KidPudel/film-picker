@@ -157,16 +157,23 @@ function useLightFollows(listRef: React.RefObject<HTMLOListElement | null>, matc
     if (!list) return;
     const byId = new Map(matches.map((m) => [String(m.film.id), m.film]));
     const p = useProjector.getState();
+    const mark = (li: Element | null) => list.querySelectorAll('.fcard.is-lit').forEach((x) => x !== li && x.classList.remove('is-lit'));
     const light = (el: Element | null) => {
-      const id = (el?.closest('[data-film]') as HTMLElement | null)?.dataset.film;
-      const film = id ? byId.get(id) : undefined;
-      if (film) p.setPreview(filmFrame(film));
+      const li = el?.closest('[data-film]') as HTMLElement | null;
+      const film = li?.dataset.film ? byId.get(li.dataset.film) : undefined;
+      if (!film || !li) return;
+      mark(li);
+      li.classList.add('is-lit');
+      p.setPreview(filmFrame(film));
     };
     if (!touch) {
       const over = (e: Event) => light(e.target as Element);
-      const leave = () => p.setPreview(null);
+      const leave = () => {
+        mark(null);
+        p.setPreview(null);
+      };
       const out = (e: FocusEvent) => {
-        if (!list.contains(e.relatedTarget as Node)) p.setPreview(null);
+        if (!list.contains(e.relatedTarget as Node)) leave();
       };
       list.addEventListener('pointerover', over);
       list.addEventListener('focusin', over);

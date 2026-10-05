@@ -39,10 +39,8 @@
 .fcard__poster:active {
   transform: scale(0.985);
 }
-@media (hover: hover) and (pointer: fine) {
-  .fcard__in:hover .fcard__poster {
-    transform: translateY(-4px);
-  }
+.fcard.is-lit .fcard__poster {
+  transform: translateY(-4px);
 }
 .fcard__stamp {
   position: absolute;
@@ -148,13 +146,18 @@
   top: 0;
   bottom: 0;
 }
-/* Neutral on the wall: the posters carry the colour. */
+/* Neutral on the wall; the film in the light shows its own colour. */
 .session__fill {
   left: 0;
   width: 100%;
   transform-origin: left center;
   background: var(--text-2);
-  transition: transform 420ms var(--ease-out);
+  transition:
+    transform 420ms var(--ease-out),
+    background-color 300ms ease;
+}
+.fcard.is-lit .session__fill {
+  background: var(--accent);
 }
 .session__over {
   background: repeating-linear-gradient(-45deg, var(--text-2) 0 1.5px, transparent 1.5px 4px);

@@ -68,3 +68,11 @@
     bottom: calc(5rem + var(--tray-h) + env(safe-area-inset-bottom));
   }
 }
+
+/* A side sheet is open: subtitles sit in the part of the frame it leaves uncovered. */
+@media (min-width: 641px) {
+  body:has(.ov-layer--drawer) .toasts {
+    left: calc((100vw - min(34rem, 100vw)) / 2);
+    width: min(40rem, calc(100vw - 34rem - 2rem));
+  }
+}

@@ -21,13 +21,16 @@ export function openFilm(film: Film, e?: MouseEvent, posterEl?: HTMLElement | nu
   e?.preventDefault();
   markHero(posterEl ?? null);
   const p = useProjector.getState();
-  p.setFrame({ image: film.poster.beam, mean: film.poster.mean });
+  p.setFrame({ image: film.poster.beam, mean: film.poster.mean, accent: film.ed.accent });
   p.warp();
   navigate(`/film/${film.slug}`, { filmId: film.id });
 }
 
 /** The light a film casts: its first frame, or the poster when there are no frames. */
-export const filmFrame = (f: Film) => (f.stills[0] ? { image: f.stills[0].beam, mean: f.stills[0].mean } : { image: f.poster.beam, mean: f.poster.mean });
+export const filmFrame = (f: Film) =>
+  f.stills[0]
+    ? { image: f.stills[0].beam, mean: f.stills[0].mean, accent: f.ed.accent }
+    : { image: f.poster.beam, mean: f.poster.mean, accent: f.ed.accent };
 
 export const Poster = forwardRef<
   HTMLImageElement,
