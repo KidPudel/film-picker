@@ -1,0 +1,259 @@
+{
+  "source": "The Movie Database (TMDB), textless backdrops, downloaded 2026-10-05 at w1280; studio copyright, used in a non-commercial prototype with credit",
+  "films": {
+    "6553389": [
+      {
+        "file": "6553389-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/cSw1rCbf907zjPrr4JUAyRkTyXB.jpg",
+        "page": "https://www.themoviedb.org/movie/1254808/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "6553389-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/e1NeVMcrYQbHnQpouyganTvaO7q.jpg",
+        "page": "https://www.themoviedb.org/movie/1254808/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "6553389-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/Oktac7ueanOjaYHcj2s8JLEfwX.jpg",
+        "page": "https://www.themoviedb.org/movie/1254808/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "6553389-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/rJrnhAyarVEWw0f1sw0JSJLxSSW.jpg",
+        "page": "https://www.themoviedb.org/movie/1254808/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "6553389-5.jpg",
+        "url": "https://image.tmdb.org/t/p/original/lfnRQv3Hat77feFSsi50HE0fTMG.jpg",
+        "page": "https://www.themoviedb.org/movie/1254808/images/backdrops",
+        "original_size": "1440x810"
+      }
+    ],
+    "1040690": [
+      {
+        "file": "1040690-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/BOeORWljjIPGuCwUgLls24ctF3.jpg",
+        "page": "https://www.themoviedb.org/movie/437586/images/backdrops",
+        "original_size": "3000x1688"
+      },
+      {
+        "file": "1040690-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/xGvFxSHkoXOUjiDpvBPGjcYKIz5.jpg",
+        "page": "https://www.themoviedb.org/movie/437586/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "1040690-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/2ab7vzLc21OwhqoD7LejzSdh22v.jpg",
+        "page": "https://www.themoviedb.org/movie/437586/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "1040690-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/dNqCNGJmev4wB0uJHq7fK59Mnt2.jpg",
+        "page": "https://www.themoviedb.org/movie/437586/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "1040690-5.jpg",
+        "url": "https://image.tmdb.org/t/p/original/1SR0f7Rdfc8LAQcOJTZgYMxpsKR.jpg",
+        "page": "https://www.themoviedb.org/movie/437586/images/backdrops",
+        "original_size": "1920x1080"
+      }
+    ],
+    "714248": [
+      {
+        "file": "714248-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/p0e88HgtWxg8rD4WqtDp9wtvwit.jpg",
+        "page": "https://www.themoviedb.org/movie/110416/images/backdrops",
+        "original_size": "1849x1040"
+      },
+      {
+        "file": "714248-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/gMHXXnYPCnkWO6O4wt3bVqwKFhh.jpg",
+        "page": "https://www.themoviedb.org/movie/110416/images/backdrops",
+        "original_size": "1280x720"
+      },
+      {
+        "file": "714248-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/9PmSVhiTbRsnn44clWrfWVhpELX.jpg",
+        "page": "https://www.themoviedb.org/movie/110416/images/backdrops",
+        "original_size": "1854x1043"
+      },
+      {
+        "file": "714248-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/kEP5aJHNSt3dJrG57nVI7ytbUPj.jpg",
+        "page": "https://www.themoviedb.org/movie/110416/images/backdrops",
+        "original_size": "1849x1040"
+      },
+      {
+        "file": "714248-5.jpg",
+        "url": "https://image.tmdb.org/t/p/original/hiOUVp7cMIV5KV0Yd0ClwEq5MyO.jpg",
+        "page": "https://www.themoviedb.org/movie/110416/images/backdrops",
+        "original_size": "1849x1040"
+      }
+    ],
+    "425": [
+      {
+        "file": "425-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/7tBfYcZH4P4AA1oFzjflUTSDZgx.jpg",
+        "page": "https://www.themoviedb.org/movie/490/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "425-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/d9hWzWeRYg7sIy3PeQgenL32qoV.jpg",
+        "page": "https://www.themoviedb.org/movie/490/images/backdrops",
+        "original_size": "1600x900"
+      },
+      {
+        "file": "425-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/6kS29AFe5qSHHwtnkyhUKXxPNqP.jpg",
+        "page": "https://www.themoviedb.org/movie/490/images/backdrops",
+        "original_size": "1600x900"
+      },
+      {
+        "file": "425-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/59OpGDeNcHYMgX0ELfTNlgjtZzO.jpg",
+        "page": "https://www.themoviedb.org/movie/490/images/backdrops",
+        "original_size": "1600x900"
+      },
+      {
+        "file": "425-5.jpg",
+        "url": "https://image.tmdb.org/t/p/original/jP98rzqxKZOEVI5kSi9iAcLVdJm.jpg",
+        "page": "https://www.themoviedb.org/movie/490/images/backdrops",
+        "original_size": "1280x720"
+      }
+    ],
+    "425400": [
+      {
+        "file": "425400-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/9YRnkhmG1lFjtSWHAuywUXab8Kv.jpg",
+        "page": "https://www.themoviedb.org/movie/46738/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "425400-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/sQXKi6zmkSpmD0HqjBNcGV9N1R7.jpg",
+        "page": "https://www.themoviedb.org/movie/46738/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "425400-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/pdI6kw2tp36TXdlWoechE9fwTeI.jpg",
+        "page": "https://www.themoviedb.org/movie/46738/images/backdrops",
+        "original_size": "2048x1152"
+      },
+      {
+        "file": "425400-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/4yXXn5ahxy03afo25AOsMQEMMnk.jpg",
+        "page": "https://www.themoviedb.org/movie/46738/images/backdrops",
+        "original_size": "2048x1152"
+      }
+    ],
+    "5237750": [
+      {
+        "file": "5237750-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/wMM4LKK0wgQm28eIzUmWpA7ZezO.jpg",
+        "page": "https://www.themoviedb.org/movie/930095/images/backdrops",
+        "original_size": "3840x2160"
+      }
+    ],
+    "225011": [
+      {
+        "file": "225011-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/79MCXIwsjhWZMfKn5EvjH7U24Xz.jpg",
+        "page": "https://www.themoviedb.org/movie/25142/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "225011-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/v5o727JDjBGaADhzMocWoojwKmg.jpg",
+        "page": "https://www.themoviedb.org/movie/25142/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "225011-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/qZLDLYm9QBw5VOiZM6sAeLzRsVI.jpg",
+        "page": "https://www.themoviedb.org/movie/25142/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "225011-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/h7HkPrY4I2HJxFoAR4zhylurdE6.jpg",
+        "page": "https://www.themoviedb.org/movie/25142/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "225011-5.jpg",
+        "url": "https://image.tmdb.org/t/p/original/eAEaTDhuix0OdXtm1dMjFbOqd2L.jpg",
+        "page": "https://www.themoviedb.org/movie/25142/images/backdrops",
+        "original_size": "1920x1080"
+      }
+    ],
+    "1259195": [
+      {
+        "file": "1259195-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/hPOs5NhnR9SQpCIE7qx2EXSfsv6.jpg",
+        "page": "https://www.themoviedb.org/movie/590219/images/backdrops",
+        "original_size": "1920x1080"
+      }
+    ],
+    "1347315": [
+      {
+        "file": "1347315-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/dBOHnvQxiONQslgiE3tJIPxnOh0.jpg",
+        "page": "https://www.themoviedb.org/movie/629704/images/backdrops",
+        "original_size": "1920x1080"
+      },
+      {
+        "file": "1347315-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/j7kXHfiCpgRIwRthBbSqfq413Yy.jpg",
+        "page": "https://www.themoviedb.org/movie/629704/images/backdrops",
+        "original_size": "1777x999"
+      },
+      {
+        "file": "1347315-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/57Wq1zPB0vbyDwS8Mxh9oQRrRwQ.jpg",
+        "page": "https://www.themoviedb.org/movie/629704/images/backdrops",
+        "original_size": "3840x2160"
+      }
+    ],
+    "677566": [
+      {
+        "file": "677566-1.jpg",
+        "url": "https://image.tmdb.org/t/p/original/bxBZkY6n25nPbiMhVG04P1OF3Xz.jpg",
+        "page": "https://www.themoviedb.org/movie/179144/images/backdrops",
+        "original_size": "1600x900"
+      },
+      {
+        "file": "677566-2.jpg",
+        "url": "https://image.tmdb.org/t/p/original/t0P5jxb20KeLH98FVolOlZmIMZC.jpg",
+        "page": "https://www.themoviedb.org/movie/179144/images/backdrops",
+        "original_size": "2560x1440"
+      },
+      {
+        "file": "677566-3.jpg",
+        "url": "https://image.tmdb.org/t/p/original/7WQpJFwQKBBSlT2lr6pfJm7t4UA.jpg",
+        "page": "https://www.themoviedb.org/movie/179144/images/backdrops",
+        "original_size": "3000x1687"
+      },
+      {
+        "file": "677566-4.jpg",
+        "url": "https://image.tmdb.org/t/p/original/yTT1UcrMzheg3Bg4JYxVSMepahT.jpg",
+        "page": "https://www.themoviedb.org/movie/179144/images/backdrops",
+        "original_size": "2560x1440"
+      },
+      {
+        "file": "677566-5.jpg",
+        "url": "https://image.tmdb.org/t/p/original/4j69V4cWHoxPPVzAqrIyc5xGhE7.jpg",
+        "page": "https://www.themoviedb.org/movie/179144/images/backdrops",
+        "original_size": "3000x1687"
+      }
+    ]
+  }
+}

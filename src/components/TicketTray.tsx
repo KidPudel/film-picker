@@ -7,7 +7,7 @@ import { FILM_BY_ID } from '../data/films';
 import { finishTime, formatRuntime } from '../lib/format';
 import { useNow } from '../lib/hooks';
 import { useRoute } from '../lib/router';
-import { openFilm } from './FilmCase';
+import { openFilm } from './Poster';
 import './TicketTray.css';
 
 /**
@@ -78,7 +78,7 @@ export function TicketTray() {
                     <span className="stub__text">
                       <span className="stub__title">{f.title}</span>
                       <span className="stub__time">
-                        {formatRuntime(f.runtime)} · до {finishTime(f.runtime, now)}
+                        до {finishTime(f.runtime, now)}, {formatRuntime(f.runtime)}
                       </span>
                     </span>
                   </a>

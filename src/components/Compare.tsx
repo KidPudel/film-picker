@@ -9,8 +9,9 @@ import { isTonightActive, matchFilm, hasVoiceover } from '../lib/match';
 import { finishTime, formatRuntime, formatScore } from '../lib/format';
 import { useNow } from '../lib/hooks';
 import { Dialog } from './Overlay';
-import { Poster, openFilm } from './FilmCase';
+import { Poster, openFilm } from './Poster';
 import { AvailabilityLabel } from './Availability';
+import { ToneIcon } from './ReasonIcon';
 import './Compare.css';
 
 /**
@@ -69,7 +70,7 @@ function ColumnHead({ film, pool, other, onChange }: { film: Film; pool: number[
           <p className="cmp__title">{film.title}</p>
         )}
         <p className="cmp__sub">
-          {film.year} · {film.directors[0]}
+          {film.year}, {film.directors[0]}
         </p>
         <AvailabilityLabel a={film.ed.availability} />
         <button
@@ -123,7 +124,15 @@ function Rows({ a, b }: { a: Film; b: Film }) {
         row('Сегодня', (_, i) => {
           const m = i === 0 ? ma : mb;
           const no = m.reasons.find((r) => r.tone === 'no');
-          return m.fits ? <span className="cmp__ok">✓ подходит под ваш вечер</span> : <span className="cmp__no">✕ {no?.text}</span>;
+          return m.fits ? (
+            <span className="cmp__verdict">
+              <ToneIcon tone="ok" /> подходит под ваш вечер
+            </span>
+          ) : (
+            <span className="cmp__verdict">
+              <ToneIcon tone="no" /> {no?.text}
+            </span>
+          );
         })}
       {row('Длительность', (f) => `${formatRuntime(f.runtime)}, конец около ${finishTime(f.runtime, now)}`, shorter)}
       {row('Нагрузка', (f) => <Bar v={f.ed.scales.intensity} t={SCALE_TEXT.intensity[f.ed.scales.intensity]} />, lighter)}
@@ -132,12 +141,12 @@ function Rows({ a, b }: { a: Film; b: Film }) {
       {row('Юмор', (f) => <Bar v={f.ed.scales.humor} t={SCALE_TEXT.humor[f.ed.scales.humor]} />)}
       {row('Ощущение', (f) => f.ed.experiences.map((e) => EXPERIENCES[e].label).join(', '))}
       {row('Коротко', (f) => f.ed.fitLine)}
-      {row('Оценки', (f) => [f.ratings.kp && `КП ${formatScore(f.ratings.kp.value)}`, f.ratings.imdb && `IMDb ${formatScore(f.ratings.imdb.value)}`].filter(Boolean).join(' · '), higher)}
+      {row('Оценки', (f) => [f.ratings.kp && `КП ${formatScore(f.ratings.kp.value)}`, f.ratings.imdb && `IMDb ${formatScore(f.ratings.imdb.value)}`].filter(Boolean).join(', '), higher)}
       {row('Друзья', (f) => {
         const t = FRIEND_TAKES[f.id];
         return t?.length ? t.map((x) => x.score).join(', ') + ' из 10' : '—';
       })}
-      {row('С кем', (f) => [f.age, f.ed.company.kids && 'можно с детьми', f.ed.company.friends && 'для компании'].filter(Boolean).join(' · '))}
+      {row('С кем', (f) => [f.age, f.ed.company.kids && 'можно с детьми', f.ed.company.friends && 'для компании'].filter(Boolean).join(', '))}
       {row('Звук', (f) => (hasVoiceover(f) ? 'есть озвучка' : 'только субтитры'))}
     </div>
   );

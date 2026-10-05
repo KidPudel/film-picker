@@ -223,7 +223,7 @@ export const useStore = create<State>()(
       startJam: () =>
         set({
           jam: {
-            code: `ПТ-${Math.floor(1000 + Math.random() * 9000)}`,
+            code: `КИНО-${Math.floor(1000 + Math.random() * 9000)}`,
             partnerJoined: false,
             votes: {},
             veto: null,
@@ -234,7 +234,7 @@ export const useStore = create<State>()(
       resetAll: () => set({ ...initial }),
     }),
     {
-      name: 'polutma:v1',
+      name: 'kino-na-vecher:v1',
       storage: createJSONStorage(() => safeStorage),
       version: 1,
       // Tonight-only dismissals expire at 5:00 the next morning.

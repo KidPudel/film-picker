@@ -41,10 +41,10 @@ function ToastItem({ t }: { t: Toast }) {
       layout
       className="toast"
       role="status"
-      initial={{ opacity: 0, y: 16, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 16, transition: { duration: 0.16 } }}
-      transition={{ type: 'spring', duration: 0.4, bounce: 0 }}
+      initial={{ opacity: 0, y: 6, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, filter: 'blur(4px)', transition: { duration: 0.16 } }}
+      transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
       onPointerEnter={() => (paused.current = true)}
       onPointerLeave={() => (paused.current = false)}
       onFocus={() => (paused.current = true)}

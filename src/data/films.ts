@@ -1,7 +1,7 @@
 import raw from '../../movies-data/movies.json';
-import posters from './posters.generated.json';
+import media from './media.generated.json';
 import { EDITORIAL } from './editorial';
-import type { Film, RawMovie } from './types';
+import type { Film, RawMovie, Still } from './types';
 import { formatRawDate, formatMoney } from '../lib/format';
 
 const LANG_TAG: Record<string, string> = {
@@ -22,8 +22,16 @@ const CREW_LABELS: [keyof RawMovie['creators'], string][] = [
   ['production_companies', 'Производство'],
 ];
 
-const posterMeta = posters as Record<string, { dominant: string; lqip: string }>;
+type Described = { palette: string[]; mean: string; lqip: string };
+const mediaMeta = media as Record<string, { poster: Described; stills: (Described & { n: number; source: string })[] }>;
 const base = import.meta.env.BASE_URL;
+
+/** "1.85:1" → 1.85; anything unparsable falls back to the common 1.85. */
+const parseAspect = (s: string) => {
+  const m = s.match(/([\d.,]+)\s*:\s*([\d.,]+)/);
+  const v = m ? parseFloat(m[1].replace(',', '.')) / parseFloat(m[2].replace(',', '.')) : NaN;
+  return Number.isFinite(v) && v > 1 ? v : 1.85;
+};
 
 function toFilm(m: RawMovie): Film {
   const id = m.identification.kinopoisk_id;
@@ -80,8 +88,23 @@ function toFilm(m: RawMovie): Film {
     poster: {
       src360: `${base}posters/${id}-360.webp`,
       src720: `${base}posters/${id}-720.webp`,
-      lqip: posterMeta[id]?.lqip ?? '',
+      lqip: mediaMeta[id]?.poster.lqip ?? '',
+      mean: mediaMeta[id]?.poster.mean ?? '#1a2236',
+      beam: `${base}beam/${id}-poster.webp`,
+      palette: mediaMeta[id]?.poster.palette ?? [],
     },
+    stills: (mediaMeta[id]?.stills ?? []).map(
+      (s): Still => ({
+        src640: `${base}stills/${id}-${s.n}-640.webp`,
+        src1280: `${base}stills/${id}-${s.n}-1280.webp`,
+        beam: `${base}beam/${id}-${s.n}.webp`,
+        lqip: s.lqip,
+        mean: s.mean,
+        palette: s.palette,
+        source: s.source,
+      }),
+    ),
+    aspectRatio: parseAspect(m.details.aspect_ratio),
     premieres,
     finances,
     sources: m.sources,

@@ -6,7 +6,7 @@ import { useUI, toast } from '../store/useUI';
 import { formatRuntime, finishTime } from '../lib/format';
 import { nearest } from '../lib/assistant';
 import { Dialog } from './Overlay';
-import { openFilm, Poster } from './FilmCase';
+import { openFilm, Poster } from './Poster';
 import './Watch.css';
 
 /**
@@ -52,10 +52,9 @@ export function Watch({ open, filmId }: { open: boolean; filmId: number }) {
           <motion.div className="watch__done" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
             <Poster film={film} sizes="160px" className="watch__poster" />
             <div className="watch__text">
-              <p className="eyebrow">Сеанс начался</p>
-              <p className="watch__title display">{film.title}</p>
+              <p className="watch__title">{film.title}</p>
               <p className="watch__lead">
-                Здесь начался бы фильм — {formatRuntime(film.runtime)}, финальные титры около {finishTime(film.runtime)}. Это прототип: плеер не подключён.
+                Сеанс начался. Здесь шёл бы фильм — {formatRuntime(film.runtime)}, финальные титры около {finishTime(film.runtime)}. Это прототип: плеер не подключён.
               </p>
               <div className="watch__acts">
                 {film.trailerUrl && (
@@ -126,7 +125,7 @@ export function Paywall({ open, filmId }: { open: boolean; filmId: number }) {
                       openFilm(f, e);
                     }}
                   >
-                    «{f.title}» <span>· {formatRuntime(f.runtime)}</span>
+                    «{f.title}»<span>, {formatRuntime(f.runtime)}</span>
                   </a>
                 </li>
               ))}

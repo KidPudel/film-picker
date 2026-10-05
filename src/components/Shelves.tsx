@@ -7,8 +7,9 @@ import { matchFilm, isTonightActive } from '../lib/match';
 import { suggestShelfNames } from '../lib/shelfNames';
 import { formatRuntime, plural } from '../lib/format';
 import { Dialog } from './Overlay';
-import { Poster, openFilm } from './FilmCase';
+import { Poster, openFilm } from './Poster';
 import { TicketButton } from './FilmActions';
+import { ToneIcon } from './ReasonIcon';
 import './Shelves.css';
 
 function savedAgo(at: number): string {
@@ -163,10 +164,15 @@ function ShelfBlock({ shelf }: { shelf: Shelf }) {
                   <span className="shelf-item__body">
                     <span className="shelf-item__title">{f.title}</span>
                     <span className="shelf-item__meta">
-                      {formatRuntime(f.runtime)} · сохранено {savedAgo(it.at)}
+                      {formatRuntime(f.runtime)}, сохранено {savedAgo(it.at)}
                     </span>
                     {it.reason && <span className="shelf-item__reason">{it.reason}</span>}
-                    {m && <span className={`shelf-item__fit ${m.fits ? 'is-yes' : ''}`}>{m.fits ? '✓ подходит под сегодняшний вечер' : `✕ ${m.reasons.find((r) => r.tone === 'no')?.text ?? 'не сегодня'}`}</span>}
+                    {m && (
+                      <span className="shelf-item__fit">
+                        <ToneIcon tone={m.fits ? 'ok' : 'no'} />
+                        {m.fits ? 'подходит под сегодняшний вечер' : m.reasons.find((r) => r.tone === 'no')?.text ?? 'не сегодня'}
+                      </span>
+                    )}
                   </span>
                 </a>
                 <div className="shelf-item__acts">

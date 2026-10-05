@@ -1,8 +1,24 @@
+/* A reserved band: the projector paints the velvet seats here. */
 .seats {
-  display: block;
-  width: 100%;
+  position: relative;
   pointer-events: none;
+  height: clamp(6rem, 13vw, 11.5rem);
 }
+.seats__fallback {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: #2a0610;
+}
+.no-webgl .seats__fallback {
+  display: block;
+}
+/* Lights on: the hall is lit, no foreground silhouettes needed. */
 :root[data-theme='light'] .seats {
-  opacity: 0.18;
+  height: var(--s5);
+}
+:root[data-theme='light'] .seats__fallback {
+  display: none;
 }

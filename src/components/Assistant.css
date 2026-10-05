@@ -1,136 +1,132 @@
+/* «Подсказчик»: ask without spoilers. */
 .asst {
   display: grid;
-  gap: var(--s-4);
-  padding: var(--s-5);
-  border-radius: var(--r-xl);
-  background:
-    radial-gradient(120% 80% at 0% 0%, rgb(var(--beam) / 0.06), transparent 60%),
-    var(--surface);
-  border: 1px solid var(--line);
-}
-.asst__meter {
-  max-width: 34rem;
+  gap: var(--s4);
 }
 .asst__log {
   list-style: none;
   padding: 0;
   display: grid;
-  gap: var(--s-4);
-  max-height: 26rem;
+  gap: var(--s4);
+  max-height: 28rem;
   overflow: auto;
   overscroll-behavior: contain;
-  scroll-padding-bottom: var(--s-3);
 }
 .asst__turn {
   display: grid;
-  gap: var(--s-2);
+  gap: var(--s2);
 }
 .asst__q {
   justify-self: end;
   max-width: 80%;
-  padding: 0.55rem 0.9rem;
-  border-radius: var(--r-lg) var(--r-lg) 4px var(--r-lg);
-  background: var(--surface-3);
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--r-md);
+  background: var(--z3);
+  color: var(--text-bright);
   font-size: var(--fs-sm);
 }
 .asst__a {
-  display: flex;
-  gap: var(--s-3);
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0.6rem;
   max-width: 62ch;
-  font-size: var(--fs-md);
-  line-height: 1.55;
   color: var(--text);
 }
 .asst__spark {
-  flex: none;
   width: 1.1rem;
   height: 1.1rem;
-  margin-top: 0.25rem;
-  color: var(--lit);
+  color: var(--text-3);
+  margin-top: 0.2rem;
 }
 .asst__gate {
-  margin-top: var(--s-2);
-  font-size: var(--fs-sm);
+  margin-top: var(--s2);
   color: var(--text-3);
+  font-size: var(--fs-sm);
 }
 .asst__raise {
-  color: var(--lit);
+  color: var(--text-bright);
+  font-weight: 600;
   text-decoration: underline;
+  text-decoration-color: var(--line-3);
   text-underline-offset: 0.2em;
-  font-weight: 560;
+  min-height: 2.75rem;
 }
 .asst__typing {
   display: inline-flex;
   gap: 4px;
-  padding: 0.6rem 0.1rem;
+  padding: 0.4rem 0;
 }
 .asst__typing span {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--text-3);
-  animation: typing 0.9s ease-in-out infinite;
+  animation: asst-dot 1s ease-in-out infinite;
 }
-.asst__typing span:nth-child(2) { animation-delay: 0.15s; }
-.asst__typing span:nth-child(3) { animation-delay: 0.3s; }
-@keyframes typing {
-  0%, 100% { opacity: 0.3; transform: translateY(0); }
-  50% { opacity: 1; transform: translateY(-3px); }
+.asst__typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.asst__typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes asst-dot {
+  50% {
+    opacity: 0.3;
+    transform: translateY(-2px);
+  }
 }
 .asst__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s-2);
+  gap: var(--s2);
 }
 .asst__form {
   display: flex;
   align-items: center;
-  gap: var(--s-2);
-  padding: 0.3rem 0.3rem 0.3rem 1rem;
-  border-radius: var(--r-pill);
-  border: 1px solid var(--line-2);
-  background: var(--bg-deep);
-  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+  gap: var(--s2);
+  padding: 0 0 0 0;
+  border-bottom: 1px solid var(--line-3);
+  transition: border-color var(--t-fast) ease;
 }
 .asst__form:focus-within {
-  border-color: rgb(var(--lit-rgb) / 0.6);
-  box-shadow: 0 0 0 4px rgb(var(--lit-rgb) / 0.12);
+  border-color: var(--text-bright);
 }
 .asst__form input {
   flex: 1;
   min-width: 0;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   border: 0;
   background: none;
+  color: var(--text-bright);
 }
 .asst__form input:focus-visible {
-  box-shadow: none;
-}
-.asst__form input::placeholder {
-  color: var(--text-3);
+  outline: none;
 }
 .asst__send {
   display: grid;
   place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: var(--lit);
-  color: var(--text-inverse);
-  transition: transform var(--t-press) var(--ease-out), opacity var(--t-fast) ease;
-}
-.asst__send:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-}
-.asst__send:active:not(:disabled) {
-  transform: scale(0.92);
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--r-sm);
+  background: var(--primary);
+  color: var(--primary-ink);
+  transition:
+    opacity var(--t-fast) ease,
+    transform var(--t-press) var(--ease-out);
 }
 .asst__send svg {
   width: 1.1rem;
   height: 1.1rem;
 }
+.asst__send:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.asst__send:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
 .asst__note {
-  font-size: var(--fs-xs);
   color: var(--text-3);
+  font-size: var(--fs-xs);
+  max-width: 62ch;
 }

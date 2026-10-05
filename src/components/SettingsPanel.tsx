@@ -15,6 +15,7 @@ export function SpoilerControl({ compact }: { compact?: boolean }) {
     <div className="spoiler-ctl">
       <Segmented<SpoilerLevel>
         label="Сколько рассказывать о сюжете"
+        className="seg--dimmer"
         size={compact ? 'sm' : 'md'}
         value={spoiler}
         options={SPOILER_LEVELS.map((l) => ({ value: l.value, label: l.label, title: l.hint }))}

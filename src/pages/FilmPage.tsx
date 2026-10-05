@@ -1,23 +1,25 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowUpRight, Bell, BellRing, Columns2, Crown, Eye, KeyRound, Play, ShieldAlert, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Bell, BellRing, ChevronLeft, ChevronRight, Columns2, Crown, Eye, KeyRound, Play, ShieldAlert, Trophy } from 'lucide-react';
 import type { Film } from '../data/types';
 import { useStore } from '../store/useStore';
 import { toast, useUI } from '../store/useUI';
 import { EXPERIENCES, SCALE_TEXT } from '../data/vocab';
-import { FILM_BY_ID } from '../data/films';
+import { FILMS, FILM_BY_ID } from '../data/films';
 import { FRIEND_BY_ID, FRIEND_TAKES } from '../data/social';
-import { isTonightActive, matchFilm } from '../lib/match';
+import { isTonightActive, matchFilm, rankFilms, type Match } from '../lib/match';
 import { alternatives } from '../lib/assistant';
-import { finishTime, formatIsoDay, formatRawDate, formatRuntime, formatScore, formatVotes, speakRuntime } from '../lib/format';
+import { finishTime, formatClock, formatIsoDay, formatRawDate, formatRuntime, formatScore, formatVotes, plural, speakRuntime } from '../lib/format';
 import { goBack, navigate } from '../lib/router';
 import { useNow } from '../lib/hooks';
-import { Hall } from '../components/Hall';
 import { Meter } from '../components/Controls';
 import { SpoilerControl } from '../components/SettingsPanel';
 import { Assistant } from '../components/Assistant';
 import { AvailabilityLabel } from '../components/Availability';
 import { NotThisButton, ShelfButton, TicketButton } from '../components/FilmActions';
-import { FriendsLine, Poster, openFilm } from '../components/FilmCase';
+import { FriendsLine, Poster, openFilm } from '../components/Poster';
+import { Reason, ToneIcon } from '../components/ReasonIcon';
+import { FilmBackdrop } from '../components/Screen';
+import { Seats } from '../components/Seats';
 import './FilmPage.css';
 
 const SECTIONS = [
@@ -34,95 +36,152 @@ const SECTIONS = [
 function Section({ id, title, lead, children }: { id: string; title: string; lead?: ReactNode; children: ReactNode }) {
   return (
     <section id={id} className="fsec" aria-labelledby={`${id}-h`}>
-      <h2 id={`${id}-h`} className="fsec__title">
-        {title}
-      </h2>
-      {lead && <p className="fsec__lead">{lead}</p>}
-      {children}
+      <div className="fsec__head">
+        <h2 id={`${id}-h`} className="fsec__title" tabIndex={-1}>
+          {title}
+        </h2>
+        {lead && <p className="fsec__lead">{lead}</p>}
+      </div>
+      <div className="fsec__body">{children}</div>
     </section>
   );
 }
 
+function useMatch(f: Film, now: Date) {
+  const tonight = useStore((s) => s.tonight);
+  const dislikes = useStore((s) => s.dislikes);
+  const seen = useStore((s) => s.seen);
+  const shelves = useStore((s) => s.shelves);
+  return useMemo(() => matchFilm(f, { tonight, dislikes, seen, shelves, now }), [f, tonight, dislikes, seen, shelves, now]);
+}
+
+/** The same order as the afisha, so «следующий» means the next film you'd see there. */
+function useNeighbours(f: Film, now: Date) {
+  const tonight = useStore((s) => s.tonight);
+  const dislikes = useStore((s) => s.dislikes);
+  const seen = useStore((s) => s.seen);
+  const shelves = useStore((s) => s.shelves);
+  const dismissed = useStore((s) => s.dismissed);
+  const sort = useStore((s) => s.sort);
+  return useMemo(() => {
+    const r = rankFilms(FILMS, { tonight, dislikes, seen, shelves, now }, dismissed, sort);
+    const list: Match[] = [...r.fits, ...r.almost];
+    const i = list.findIndex((m) => m.film.id === f.id);
+    if (i < 0) return { prev: undefined, next: undefined, pos: 0, total: list.length, fits: r.fits.length };
+    return { prev: list[i - 1]?.film, next: list[i + 1]?.film, pos: i + 1, total: list.length, fits: r.fits.length };
+  }, [f, tonight, dislikes, seen, shelves, dismissed, sort, now]);
+}
+
+const step = (to: Film | undefined, instant: boolean) => to && navigate(`/film/${to.slug}`, { filmId: to.id, instant, replace: true });
+
 export function FilmPage({ film }: { film: Film }) {
   const h1 = useRef<HTMLHeadingElement>(null);
   const now = useNow();
+  const f = film;
+  const n = useNeighbours(f, now);
 
   // Move focus to the title so screen readers announce the new page.
   useEffect(() => {
     h1.current?.focus({ preventScroll: true });
-  }, [film.id]);
+  }, [f.id]);
 
-  const f = film;
+  // ← / → step through the afisha. Keyboard moves never animate.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.altKey || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      const t = e.target as HTMLElement;
+      if (t.closest('input, textarea, select, [role="radiogroup"], [contenteditable="true"]')) return;
+      if (useUI.getState().overlay || document.querySelector('.ov-pop, .ov-sheet')) return;
+      if (e.key === 'ArrowRight' && n.next) step(n.next, true);
+      if (e.key === 'ArrowLeft' && n.prev) step(n.prev, true);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [n.next, n.prev]);
+
+  const meta = [
+    String(f.year),
+    f.countries.join(', '),
+    `режиссёр ${f.directors.join(', ')}`,
+    f.isBW ? 'чёрно-белый' : null,
+  ].filter(Boolean) as string[];
+
   return (
     <article className="film" style={{ ['--accent' as string]: f.ed.accent }}>
-      <Hall film={f} />
+      <section className="fhero" aria-label="Фильм">
+        <FilmBackdrop film={f} className="fhero__media" onSwipe={(d) => step(d > 0 ? n.next : n.prev, false)} />
+        <div className="fhero__over container">
+          <div className="fhero__bar">
+            <button type="button" className="btn btn--quiet btn--sm fhero__back" onClick={goBack}>
+              <ArrowLeft aria-hidden="true" /> К афише
+            </button>
+            <nav className="fhero__step" aria-label="Другие фильмы афиши">
+              <button type="button" className="icon-btn" disabled={!n.prev} onClick={() => step(n.prev, false)} aria-label={n.prev ? `Предыдущий: «${n.prev.title}»` : 'Это первый фильм в афише'} title="← на клавиатуре">
+                <ChevronLeft aria-hidden="true" />
+              </button>
+              <span className="fhero__pos">
+                {n.pos} из {n.total}
+              </span>
+              <button type="button" className="icon-btn" disabled={!n.next} onClick={() => step(n.next, false)} aria-label={n.next ? `Следующий: «${n.next.title}»` : 'Это последний фильм в афише'} title="→ на клавиатуре">
+                <ChevronRight aria-hidden="true" />
+              </button>
+            </nav>
+          </div>
 
-      <header className="film__head container">
-        <button type="button" className="btn btn--quiet btn--sm film__back" onClick={goBack}>
-          <ArrowLeft aria-hidden="true" /> К афише
-        </button>
-        <p className="eyebrow">
-          {f.genres.join(' · ')} · {f.year} · {f.countries.join(', ')}
-        </p>
-        <h1 className="film__title display" ref={h1} tabIndex={-1}>
-          {f.title}
-        </h1>
-        {f.originalTitle !== f.title && (
-          <p className="film__orig" lang={f.originalLang}>
-            {f.originalTitle}
-          </p>
-        )}
-        <p className="film__meta">
-          <span aria-label={speakRuntime(f.runtime)}>{formatRuntime(f.runtime)}</span>
-          <span>режиссёр {f.directors.join(', ')}</span>
-          <span className="film__age">{f.age}</span>
-          {f.isBW && <span>чёрно-белый</span>}
-        </p>
-        <ul className="words words--lg" aria-label="Что даёт фильм">
-          {f.ed.experiences.map((w) => (
-            <li key={w}>{EXPERIENCES[w].label}</li>
-          ))}
-        </ul>
-        <p className="film__fit">{f.ed.fitLine}</p>
-      </header>
-
-      <div className="film__layout container">
-        <div className="film__main">
-          <nav className="film__toc" aria-label="Разделы страницы">
-            {SECTIONS.map((s) => (
-              <a key={s.id} href={`#${s.id}`} onClick={(e) => {
-                e.preventDefault();
-                document.getElementById(s.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                document.getElementById(`${s.id}-h`)?.focus({ preventScroll: true });
-              }}>
-                {s.label}
-              </a>
-            ))}
-          </nav>
-
-          <FitSection film={f} now={now} />
-          <FeelSection film={f} />
-          <StorySection film={f} />
-          <Section id="ask" title="Спросить без спойлеров" lead="Сами решите, сколько хотите знать заранее.">
-            <Assistant film={f} />
-          </Section>
-          <RatingsSection film={f} />
-          <PeopleSection film={f} />
-          <DetailsSection film={f} />
-          <SourcesSection film={f} />
-          <AltSection film={f} />
+          <div className="fhero__main">
+            <Poster film={f} hero="screen" eager sizes="200px" className="fhero__poster" alt={`Постер фильма «${f.title}»`} />
+            <header className="fhero__titles">
+              <h1 className="fhero__title" ref={h1} tabIndex={-1}>
+                {f.title}
+              </h1>
+              {f.originalTitle !== f.title && (
+                <p className="fhero__orig" lang={f.originalLang}>
+                  {f.originalTitle}
+                </p>
+              )}
+              <ul className="fhero__meta" aria-label="Коротко о фильме">
+                {meta.map((m) => (
+                  <li key={m}>{m}</li>
+                ))}
+                <li>
+                  <span aria-label={speakRuntime(f.runtime)}>{formatRuntime(f.runtime)}</span>
+                </li>
+                <li className="fhero__age">{f.age}</li>
+              </ul>
+              <p className="fhero__fit">{f.ed.fitLine}</p>
+              <ul className="words fhero__words" aria-label="Что даёт фильм">
+                {f.ed.experiences.map((w) => (
+                  <li key={w}>{EXPERIENCES[w].label}</li>
+                ))}
+              </ul>
+            </header>
+          </div>
+          <Decision film={f} now={now} />
         </div>
+      </section>
+      <Seats className="fhero__seats" />
 
-        <aside className="film__aside" aria-label="Решение">
-          <DecisionCard film={f} now={now} />
-        </aside>
+      <FilmNav film={f} />
+
+      <div className="film__body container">
+        <FitSection film={f} now={now} />
+        <FeelSection film={f} />
+        <StorySection film={f} />
+        <Section id="ask" title="Спросить без спойлеров" lead="Сами решите, сколько хотите знать заранее.">
+          <Assistant film={f} />
+        </Section>
+        <RatingsSection film={f} />
+        <PeopleSection film={f} />
+        <DetailsSection film={f} />
+        <SourcesSection film={f} />
+        <AltSection film={f} />
       </div>
       <MobileBar film={f} />
     </article>
   );
 }
 
-// ─── Decision card ────────────────────────────────────────────────────────
+// ─── Decision ─────────────────────────────────────────────────────────────
 
 function primaryAction(f: Film, reminded: boolean) {
   const a = f.ed.availability;
@@ -142,74 +201,198 @@ function usePrimary(f: Film) {
     if (a.kind === 'included') open({ type: 'watch', filmId: f.id });
     else if (a.kind === 'soon') {
       toggleReminder(f.id);
-      toast(reminded ? 'Напоминание отменено' : `Напомним ${formatIsoDay(a.date)}, когда «${f.title}» появится в каталоге`);
+      if (reminded) toast('Напоминание отменено', { label: 'Вернуть', run: () => useStore.getState().toggleReminder(f.id) });
+      else toast(`Напомним ${formatIsoDay(a.date)}, когда «${f.title}» появится в каталоге`, { label: 'Отменить', run: () => useStore.getState().toggleReminder(f.id) });
     } else open({ type: 'paywall', filmId: f.id });
   };
   return { label, Icon, run, reminded };
 }
 
-function DecisionCard({ film: f, now }: { film: Film; now: Date }) {
-  const tickets = useStore((s) => s.tickets);
-  const spoiler = useStore((s) => s.spoiler);
-  const open = useUI((s) => s.open);
-  const { label, Icon, run, reminded } = usePrimary(f);
-  const a = f.ed.availability;
-  const others = tickets.filter((t) => t !== f.id);
-
+function Verdict({ m }: { m: Match }) {
+  const tonight = useStore((s) => s.tonight);
+  if (!isTonightActive(tonight)) {
+    return (
+      <div className="verdict">
+        <p className="verdict__none">
+          Расскажите о вечере в{' '}
+          <button type="button" className="linklike" onClick={() => navigate('/')}>
+            афише
+          </button>
+          , и здесь будет видно, подходит ли фильм именно вам.
+        </p>
+      </div>
+    );
+  }
+  const no = m.reasons.filter((r) => r.tone === 'no');
+  const warn = m.reasons.filter((r) => r.tone === 'warn');
+  const ok = m.reasons.filter((r) => r.tone === 'ok');
+  const top = [...no, ...warn, ...ok].slice(0, 3);
   return (
-    <div className="decide">
-      <div className="decide__avail">
-        <AvailabilityLabel a={a} />
-        <p className="decide__avail-note">
-          {a.kind === 'included' && 'Входит в вашу подписку — без доплат.'}
-          {a.kind === 'premium' && 'Нужна подписка «Премиум» · 399 ₽ в месяц, первые 7 дней бесплатно.'}
-          {a.kind === 'rent' && `Аренда на 48 часов · ${a.price} ₽. В подписку не входит.`}
-          {a.kind === 'soon' && `Появится в каталоге ${formatIsoDay(a.date)}. Сегодня посмотреть нельзя.`}
-        </p>
-      </div>
-      <button type="button" className={`btn btn--lg ${a.kind === 'soon' && reminded ? 'btn--ghost' : 'btn--primary'} decide__cta`} onClick={run} aria-pressed={a.kind === 'soon' ? reminded : undefined}>
-        <Icon aria-hidden="true" /> {label}
-      </button>
-      {a.kind !== 'soon' && (
-        <p className="decide__time">
-          Начнёте сейчас — закончите около <strong>{finishTime(f.runtime, now)}</strong>
-        </p>
-      )}
-      <div className="decide__acts">
-        <TicketButton film={f} variant="full" />
-        <ShelfButton film={f} variant="full" />
-        <NotThisButton film={f} variant="full" />
-      </div>
-      {others.length > 0 && (
-        <div className="decide__compare">
-          {others.slice(0, 2).map((o) => (
-            <button key={o} type="button" className="btn btn--ghost btn--sm" onClick={() => open({ type: 'compare', ids: [f.id, o] })}>
-              <Columns2 aria-hidden="true" /> Сравнить с «{FILM_BY_ID.get(o)?.title}»
-            </button>
-          ))}
-        </div>
-      )}
-      {f.trailerUrl && (
-        <a className="decide__trailer" href={f.trailerUrl} target="_blank" rel="noopener noreferrer">
-          <Eye aria-hidden="true" />
-          <span>
-            Трейлер на сайте дистрибьютора <ArrowUpRight aria-hidden="true" className="decide__ext" />
-            <span className="sr-only">(откроется в новой вкладке)</span>
-            {spoiler < 2 && <span className="decide__warn">Трейлеры часто раскрывают больше, чем завязку.</span>}
-          </span>
+    <div className={`verdict ${m.fits ? 'verdict--yes' : 'verdict--no'}`}>
+      <p className="verdict__head">
+        <ToneIcon tone={m.fits ? 'ok' : 'no'} />
+        {m.fits ? 'Под ваш вечер подходит' : 'Под ваш вечер подходит не во всём'}
+      </p>
+      <ul className="reasons verdict__list">
+        {top.map((r) => (
+          <Reason key={r.text} tone={r.tone} text={r.text} />
+        ))}
+      </ul>
+      {m.reasons.length > top.length && (
+        <a className="verdict__more" href="#fit" onClick={(e) => jump(e, 'fit')}>
+          Все причины
         </a>
       )}
     </div>
   );
 }
 
+function jump(e: React.MouseEvent, id: string) {
+  e.preventDefault();
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.motion === 'reduce';
+  document.getElementById(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  document.getElementById(`${id}-h`)?.focus({ preventScroll: true });
+}
+
+function Decision({ film: f, now }: { film: Film; now: Date }) {
+  const tickets = useStore((s) => s.tickets);
+  const spoiler = useStore((s) => s.spoiler);
+  const open = useUI((s) => s.open);
+  const m = useMatch(f, now);
+  const { label, Icon, run, reminded } = usePrimary(f);
+  const a = f.ed.availability;
+  const others = tickets.filter((t) => t !== f.id);
+  const pct = Math.min(100, ((f.runtime + 5) / 180) * 100);
+
+  return (
+    <div className="decide">
+      <Verdict m={m} />
+
+      <div className="decide__row">
+        <button
+          type="button"
+          className={`btn btn--lg ${a.kind === 'soon' && reminded ? 'btn--ghost' : 'btn--film'} decide__cta`}
+          onClick={run}
+          aria-pressed={a.kind === 'soon' ? reminded : undefined}
+        >
+          <Icon aria-hidden="true" /> {label}
+        </button>
+        <TicketButton film={f} variant="full" />
+        <ShelfButton film={f} variant="full" />
+        <NotThisButton film={f} variant="full" />
+      </div>
+
+      <div className="decide__facts">
+        {a.kind !== 'soon' ? (
+          <div className="decide__session" aria-label={`Если начать сейчас, закончится около ${finishTime(f.runtime, now)}`}>
+            <span className="decide__clock" aria-hidden="true">
+              <time>{formatClock(now)}</time>
+              <span className="decide__track">
+                <span style={{ width: `${pct}%` }} />
+              </span>
+              <span className="decide__end">
+                до <time>{finishTime(f.runtime, now)}</time>
+              </span>
+            </span>
+          </div>
+        ) : (
+          <p className="decide__soon">Сегодня посмотреть нельзя: фильм появится {formatIsoDay(a.date)}.</p>
+        )}
+        <p className="decide__access">
+          <AvailabilityLabel a={a} />
+          <span className="decide__note">
+            {a.kind === 'included' && 'без доплат'}
+            {a.kind === 'premium' && 'подписка «Премиум», 399 ₽ в месяц, 7 дней бесплатно'}
+            {a.kind === 'rent' && 'на 48 часов, в подписку не входит'}
+            {a.kind === 'soon' && 'можно попросить напомнить'}
+          </span>
+          <span className="demo-tag">демо</span>
+        </p>
+      </div>
+
+      {(others.length > 0 || f.trailerUrl) && (
+        <div className="decide__more">
+          {others.slice(0, 2).map((o) => (
+            <button key={o} type="button" className="btn btn--quiet btn--sm" onClick={() => open({ type: 'compare', ids: [f.id, o] })}>
+              <Columns2 aria-hidden="true" /> Сравнить с «{FILM_BY_ID.get(o)?.title}»
+            </button>
+          ))}
+          {f.trailerUrl && (
+            <a className="btn btn--quiet btn--sm decide__trailer" href={f.trailerUrl} target="_blank" rel="noopener noreferrer">
+              <Eye aria-hidden="true" />
+              Трейлер
+              <ArrowUpRight aria-hidden="true" />
+              <span className="sr-only"> (откроется в новой вкладке)</span>
+            </a>
+          )}
+          {f.trailerUrl && spoiler < 2 && <span className="decide__warn">Трейлеры часто раскрывают больше, чем завязку.</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Section links + a compact action, once the hero has scrolled away. */
+function FilmNav({ film: f }: { film: Film }) {
+  const { label, Icon, run } = usePrimary(f);
+  const [stuck, setStuck] = useState(false);
+  const [current, setCurrent] = useState('fit');
+  const sentinel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinel.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting && e.boundingClientRect.top < 0));
+    io.observe(el);
+    const secs = SECTIONS.map((s) => document.getElementById(s.id)).filter(Boolean) as HTMLElement[];
+    const io2 = new IntersectionObserver(
+      (entries) => {
+        const vis = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (vis) {
+          setCurrent(vis.target.id);
+          secs.forEach((sec) => sec.classList.toggle('is-lit', sec === vis.target));
+        }
+      },
+      { rootMargin: '-30% 0px -60% 0px' },
+    );
+    secs.forEach((s) => io2.observe(s));
+    return () => {
+      io.disconnect();
+      io2.disconnect();
+    };
+  }, [f.id]);
+
+  return (
+    <>
+      <div ref={sentinel} className="fnav-sentinel" aria-hidden="true" />
+      <div className={`fnav ${stuck ? 'is-stuck' : ''}`}>
+        <div className="fnav__inner container">
+          <p className="fnav__title" aria-hidden={!stuck}>
+            {f.title}
+          </p>
+          <nav className="fnav__links" aria-label="Разделы страницы">
+            {SECTIONS.map((s) => (
+              <a key={s.id} href={`#${s.id}`} aria-current={current === s.id ? 'true' : undefined} onClick={(e) => jump(e, s.id)}>
+                {s.label}
+              </a>
+            ))}
+          </nav>
+          <button type="button" className="btn btn--film btn--sm fnav__cta" onClick={run} tabIndex={stuck ? 0 : -1} aria-hidden={!stuck}>
+            <Icon aria-hidden="true" /> {label}
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function MobileBar({ film: f }: { film: Film }) {
   const { label, Icon, run } = usePrimary(f);
   return (
-    <div className="mbar">
+    <div className="mbar" role="region" aria-label="Решение">
       <TicketButton film={f} />
       <ShelfButton film={f} />
-      <button type="button" className="btn btn--primary mbar__cta" onClick={run}>
+      <button type="button" className="btn btn--film mbar__cta" onClick={run}>
         <Icon aria-hidden="true" /> {label}
       </button>
     </div>
@@ -220,48 +403,40 @@ function MobileBar({ film: f }: { film: Film }) {
 
 function FitSection({ film: f, now }: { film: Film; now: Date }) {
   const tonight = useStore((s) => s.tonight);
-  const dislikes = useStore((s) => s.dislikes);
-  const seen = useStore((s) => s.seen);
-  const shelves = useStore((s) => s.shelves);
   const active = isTonightActive(tonight);
-  const m = useMemo(() => matchFilm(f, { tonight, dislikes, seen, shelves, now }), [f, tonight, dislikes, seen, shelves, now]);
+  const m = useMatch(f, now);
 
   return (
     <Section id="fit" title="Подойдёт ли сегодня">
       {active ? (
-        <div className={`fitcheck ${m.fits ? 'fitcheck--yes' : 'fitcheck--no'}`}>
+        <div className="fitcheck">
           <p className="fitcheck__verdict">
+            <ToneIcon tone={m.fits ? 'ok' : 'no'} />
             {m.fits ? 'Под ваш вечер подходит' : 'Под ваш вечер подходит не во всём'}
-            <button type="button" className="fitcheck__edit" onClick={() => navigate('/')}>
-              изменить вечер
+            <button type="button" className="linklike fitcheck__edit" onClick={() => navigate('/')}>
+              Изменить вечер
             </button>
           </p>
-          <ul className="fitcheck__list">
+          <ul className="reasons fitcheck__list">
             {m.reasons.map((r) => (
-              <li key={r.text} className={`reason reason--${r.tone}`}>
-                <span className="reason__icon" aria-hidden="true">
-                  {r.tone === 'ok' ? '✓' : r.tone === 'warn' ? '!' : '✕'}
-                </span>
-                <span>
-                  <span className="sr-only">{r.tone === 'ok' ? 'Подходит: ' : r.tone === 'warn' ? 'Учтите: ' : 'Не подходит: '}</span>
-                  {r.text}
-                </span>
-              </li>
+              <Reason key={r.text} tone={r.tone} text={r.text} />
             ))}
           </ul>
         </div>
       ) : (
-        <p className="fsec__lead">
+        <p className="fsec__text">
           Вы ещё не рассказали о вечере.{' '}
           <button type="button" className="linklike" onClick={() => navigate('/')}>
             Заполните одно предложение в афише
           </button>
-          , и мы проверим, подходит ли фильм именно вам. А пока — общий ориентир:
+          , и мы проверим, подходит ли фильм именно вам. А пока — общий ориентир.
         </p>
       )}
       <div className="whenwhen">
         <div>
-          <h3 className="whenwhen__h whenwhen__h--yes">Хорошо, когда</h3>
+          <h3 className="whenwhen__h">
+            <ToneIcon tone="ok" /> Хорошо, когда
+          </h3>
           <ul>
             {f.ed.goodWhen.map((g) => (
               <li key={g}>{g}</li>
@@ -269,7 +444,9 @@ function FitSection({ film: f, now }: { film: Film; now: Date }) {
           </ul>
         </div>
         <div>
-          <h3 className="whenwhen__h whenwhen__h--no">Лучше отложить, если</h3>
+          <h3 className="whenwhen__h">
+            <ToneIcon tone="warn" /> Лучше отложить, если
+          </h3>
           <ul>
             {f.ed.skipIf.map((g) => (
               <li key={g}>{g}</li>
@@ -285,23 +462,23 @@ function FitSection({ film: f, now }: { film: Film; now: Date }) {
 function FeelSection({ film: f }: { film: Film }) {
   const s = f.ed.scales;
   return (
-    <Section id="feel" title="Каким будет этот вечер" lead="Редакционная оценка опыта — не обещание, а ориентир.">
+    <Section id="feel" title="Каким будет этот вечер" lead="Редакционная оценка опыта — ориентир, а не обещание.">
       <div className="feel">
         <div className="feel__meters">
-          <Meter label="Темп" value={s.pace} text={SCALE_TEXT.pace[s.pace]} accent="var(--accent)" />
-          <Meter label="Нагрузка" value={s.intensity} text={SCALE_TEXT.intensity[s.intensity]} accent="var(--accent)" />
-          <Meter label="Внимание" value={s.attention} text={SCALE_TEXT.attention[s.attention]} accent="var(--accent)" />
-          <Meter label="Юмор" value={s.humor} text={SCALE_TEXT.humor[s.humor]} accent="var(--accent)" />
+          <Meter label="Темп" value={s.pace} text={SCALE_TEXT.pace[s.pace]} />
+          <Meter label="Нагрузка" value={s.intensity} text={SCALE_TEXT.intensity[s.intensity]} />
+          <Meter label="Внимание" value={s.attention} text={SCALE_TEXT.attention[s.attention]} />
+          <Meter label="Юмор" value={s.humor} text={SCALE_TEXT.humor[s.humor]} />
         </div>
         <div className="feel__text">
-          <figure className="feel__quote">
-            <figcaption>Настроение</figcaption>
-            <blockquote>{f.mood}</blockquote>
-          </figure>
-          <figure className="feel__quote">
-            <figcaption>Как снято</figcaption>
-            <blockquote>{f.visualStyle}</blockquote>
-          </figure>
+          <div>
+            <h3 className="feel__h">Настроение</h3>
+            <p>{f.mood}</p>
+          </div>
+          <div>
+            <h3 className="feel__h">Как снято</h3>
+            <p>{f.visualStyle}</p>
+          </div>
         </div>
       </div>
     </Section>
@@ -321,7 +498,7 @@ function StorySection({ film: f }: { film: Film }) {
         {level >= 1 ? (
           <p className="story__logline">{f.logline}</p>
         ) : (
-          <Veil label="Завязка скрыта — вы просили ничего не рассказывать" action="Показать одну фразу" onReveal={() => setPeek(1)} />
+          <Veil label="Завязка скрыта: вы просили ничего не рассказывать" action="Показать одну фразу" onReveal={() => setPeek(1)} />
         )}
         {level >= 1 && (
           <ul className="story__themes" aria-label="Темы">
@@ -356,7 +533,7 @@ function StorySection({ film: f }: { film: Film }) {
 
       <div className="notes">
         <div className="notes__head">
-          <ShieldAlert aria-hidden="true" />
+          <ShieldAlert aria-hidden="true" className="notes__icon" />
           <div>
             <h3 className="notes__title">Деликатные моменты</h3>
             <p className="notes__lead">Для тех, кому важно знать заранее. Пометки могут намекать на события сюжета.</p>
@@ -399,7 +576,11 @@ function RatingsSection({ film: f }: { film: Film }) {
   const noms = f.awards.filter((a) => a.result !== 'win');
   const checked = f.ratings.kp?.checked_on ?? f.ratings.imdb?.checked_on;
   return (
-    <Section id="ratings" title="Оценки и признание" lead="Рейтинги говорят о репутации, а не о том, подойдёт ли фильм именно сегодня. Поэтому рядом — люди, которым вы доверяете.">
+    <Section
+      id="ratings"
+      title="Оценки и признание"
+      lead="Рейтинги говорят о репутации, а не о том, подойдёт ли фильм именно сегодня. Поэтому рядом — люди, которым вы доверяете."
+    >
       <div className="ratings">
         {f.ratings.kp && <Score name="Кинопоиск" value={f.ratings.kp.value} votes={formatVotes(f.ratings.kp.votes, f.ratings.kp.votes_approximate)} />}
         {f.ratings.imdb && <Score name="IMDb" value={f.ratings.imdb.value} votes={formatVotes(f.ratings.imdb.votes, f.ratings.imdb.votes_approximate)} />}
@@ -417,11 +598,16 @@ function RatingsSection({ film: f }: { film: Film }) {
                       {fr.name[0]}
                     </span>
                     <span className="takes__who">
-                      {fr.name} <span className="takes__circle">· {fr.circle}</span>
+                      <span>
+                        {fr.name} <span className="takes__circle">, {fr.circle}</span>
+                      </span>
                       {t.note && <span className="takes__note">«{t.note}»</span>}
                       {t.recommendsTo && <span className="takes__rec">советует {t.recommendsTo === 'вам' ? 'вам' : `группе «${t.recommendsTo}»`}</span>}
                     </span>
-                    <span className="takes__score">{t.score}</span>
+                    <span className="takes__score">
+                      {t.score}
+                      <span className="sr-only"> из 10</span>
+                    </span>
                   </li>
                 );
               })}
@@ -436,9 +622,10 @@ function RatingsSection({ film: f }: { film: Film }) {
       {f.awards.length > 0 && (
         <div className="awards">
           <h3 className="awards__h">
-            <Trophy aria-hidden="true" /> {wins.length > 0 && `${wins.length} ${wins.length === 1 ? 'награда' : wins.length < 5 ? 'награды' : 'наград'}`}
+            <Trophy aria-hidden="true" />
+            {wins.length > 0 && `${wins.length} ${plural(wins.length, ['награда', 'награды', 'наград'])}`}
             {wins.length > 0 && noms.length > 0 && ' и '}
-            {noms.length > 0 && `${noms.length} ${noms.length === 1 ? 'номинация' : noms.length < 5 ? 'номинации' : 'номинаций'}`}
+            {noms.length > 0 && `${noms.length} ${plural(noms.length, ['номинация', 'номинации', 'номинаций'])}`}
           </h3>
           <ul className="awards__list">
             {f.awards.map((a, i) => (
@@ -466,7 +653,7 @@ function Score({ name, value, votes }: { name: string; value: number; votes: str
       <p className="score__name">{name}</p>
       <p className="score__value">
         {formatScore(value)}
-        <span className="score__of">/10</span>
+        <span className="score__of"> из 10</span>
       </p>
       <p className="score__votes">{votes}</p>
     </div>
@@ -479,7 +666,7 @@ function PeopleSection({ film: f }: { film: Film }) {
       <div className="people">
         <div className="people__dir">
           <p className="people__label">Режиссёр</p>
-          <p className="people__dirname display">{f.directors.join(', ')}</p>
+          <p className="people__dirname">{f.directors.join(', ')}</p>
         </div>
         <ul className="cast">
           {f.cast.map((c) => (
@@ -504,20 +691,25 @@ function PeopleSection({ film: f }: { film: Film }) {
 
 function DetailsSection({ film: f }: { film: Film }) {
   const rows: [string, ReactNode][] = [
-    ['Длительность', `${formatRuntime(f.runtime)}`],
-    ['Звук и субтитры', f.ed.audio.join(' · ')],
+    ['Длительность', formatRuntime(f.runtime)],
+    [
+      'Звук и субтитры',
+      <>
+        {f.ed.audio.join(', ')} <span className="demo-tag">демо</span>
+      </>,
+    ],
     ['Языки оригинала', f.languages.join(', ')],
     ['Изображение', `${f.isBW ? 'Чёрно-белое' : 'Цветное'}, кадр ${f.aspect}`],
     ['Возраст', f.age],
     ['Страны', f.countries.join(', ')],
-    ...f.premieres.map((p): [string, ReactNode] => [p.label, p.date ? `${p.date} — ${p.event}` : p.event]),
+    ...f.premieres.map((p): [string, ReactNode] => [p.label, p.date ? `${p.date}, ${p.event}` : p.event]),
     ...f.finances.map((x): [string, ReactNode] => [x.label, x.value]),
   ];
   return (
     <Section id="details" title="Детали">
       <dl className="details">
-        {rows.map(([k, v]) => (
-          <div key={k + String(v)}>
+        {rows.map(([k, v], i) => (
+          <div key={k + i}>
             <dt>{k}</dt>
             <dd>{v}</dd>
           </div>
@@ -528,19 +720,30 @@ function DetailsSection({ film: f }: { film: Film }) {
 }
 
 function SourcesSection({ film: f }: { film: Film }) {
+  const stillsPage = f.stills[0]?.source;
   return (
-    <Section id="sources" title="Откуда эти данные" lead="Мы показываем источники и честно отмечаем, где они расходятся.">
+    <Section id="sources" title="Откуда эти данные" lead="Показываем источники и честно отмечаем, где они расходятся.">
       <ul className="sources">
         {f.sources.map((s) => (
           <li key={s.id}>
             <a href={s.url} target="_blank" rel="noopener noreferrer">
               {s.title}
               <ArrowUpRight aria-hidden="true" />
-              <span className="sr-only">(откроется в новой вкладке)</span>
+              <span className="sr-only"> (откроется в новой вкладке)</span>
             </a>
             <span className="sources__when">проверено {formatRawDate(s.accessed_on)}</span>
           </li>
         ))}
+        {stillsPage && (
+          <li>
+            <a href={stillsPage} target="_blank" rel="noopener noreferrer">
+              Кадры на экране: The Movie Database (TMDB)
+              <ArrowUpRight aria-hidden="true" />
+              <span className="sr-only"> (откроется в новой вкладке)</span>
+            </a>
+            <span className="sources__when">выбраны без спойлеров, 5 октября 2026</span>
+          </li>
+        )}
       </ul>
       {f.discrepancies.length > 0 && (
         <div className="discrep">
@@ -572,18 +775,18 @@ function AltSection({ film: f }: { film: Film }) {
     <Section id="alts" title="Если не совсем то" lead="Похожие фильмы, которые отличаются в одном понятном направлении.">
       <ul className="alts">
         {alts.map(({ film: a, label }) => (
-          <li key={a.id} className="alt" style={{ ['--accent' as string]: a.ed.accent }}>
+          <li key={a.id} className="alt">
             <a href={`#/film/${a.slug}`} onClick={(e) => openFilm(a, e)} className="alt__link">
               <Poster film={a} sizes="96px" className="alt__poster" />
               <span className="alt__body">
                 <span className="alt__label">{label}</span>
                 <span className="alt__title">{a.title}</span>
                 <span className="alt__meta">
-                  {formatRuntime(a.runtime)} · {SCALE_TEXT.intensity[a.ed.scales.intensity]}
+                  {formatRuntime(a.runtime)}, {SCALE_TEXT.intensity[a.ed.scales.intensity]}
                 </span>
-                <FriendsLine film={a} />
               </span>
             </a>
+            <FriendsLine film={a} />
           </li>
         ))}
       </ul>

@@ -1,145 +1,163 @@
-/* Segmented control with a sliding thumb (moves on change — state indication) */
+/* ─── Segmented control (radiogroup): options on a hairline rail, the chosen one in white ─── */
 .seg {
   display: grid;
-  gap: var(--s-2);
+  gap: var(--s2);
+  justify-items: start;
 }
 .seg__label {
-  font-size: var(--fs-xs);
-  color: var(--text-3);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 550;
 }
 .seg__track {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(var(--n), 1fr);
-  padding: 3px;
-  border-radius: var(--r-pill);
-  background: var(--bg-deep);
-  border: 1px solid var(--line);
-  isolation: isolate;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
 }
+.seg__track::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--line-2);
+}
+/* The marker slides under the chosen option (interruptible transition). */
 .seg__thumb {
   position: absolute;
-  z-index: -1;
-  top: 3px;
-  bottom: 3px;
-  left: 3px;
-  width: calc((100% - 6px) / var(--n));
-  border-radius: var(--r-pill);
-  background: var(--surface-3);
-  box-shadow: inset 0 1px 0 rgb(var(--beam) / 0.1), 0 1px 3px rgb(0 0 0 / 0.3);
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: calc(100% / var(--n));
   transform: translateX(calc(100% * var(--i)));
-  transition: transform var(--t-mid) var(--ease-out);
+  background: var(--text-bright);
+  transition: transform 260ms var(--ease-out);
 }
 .seg__opt {
-  min-height: 2.5rem;
-  padding: 0 0.75rem;
-  border-radius: var(--r-pill);
-  font-size: var(--fs-sm);
-  color: var(--text-3);
-  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4em;
-  transition: color var(--t-fast) ease;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  font-weight: 550;
+  white-space: nowrap;
+  transition:
+    color var(--t-fast) ease,
+    transform var(--t-press) var(--ease-out);
 }
 .seg__opt svg {
-  width: 1.05em;
-  height: 1.05em;
+  width: 1.05rem;
+  height: 1.05rem;
+}
+.seg__opt:active {
+  transform: scale(0.97);
 }
 .seg__opt[aria-checked='true'] {
-  color: var(--text);
-}
-.seg--sm .seg__opt {
-  min-height: 2.25rem;
-  font-size: var(--fs-xs);
-  padding: 0 0.6rem;
+  color: var(--text-bright);
 }
 @media (hover: hover) and (pointer: fine) {
-  .seg__opt:hover {
+  .seg__opt:hover:not([aria-checked='true']) {
     color: var(--text);
   }
 }
+.seg--sm .seg__opt {
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+}
+@media (pointer: coarse) {
+  .seg--sm .seg__opt {
+    min-height: 2.75rem;
+  }
+}
 
-/* Switch */
+/* The spoiler dimmer: the more you let in, the more of the rail fills. */
+.seg--dimmer .seg__track::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: calc(100% * var(--i) / var(--n));
+  background: var(--line-3);
+  transition: width 260ms var(--ease-out);
+}
+
+/* ─── Switch ─── */
 .switch {
   display: inline-flex;
   align-items: center;
-  gap: var(--s-3);
+  gap: 0.65rem;
   min-height: 2.75rem;
+  padding: 0 0.25rem;
+  color: var(--text);
   font-size: var(--fs-sm);
-  color: var(--text-2);
-  text-align: left;
+  font-weight: 550;
 }
 .switch__track {
-  flex: none;
   position: relative;
   width: 2.5rem;
   height: 1.5rem;
   border-radius: var(--r-pill);
-  background: var(--surface-3);
-  border: 1px solid var(--line-2);
-  transition: background-color var(--t-fast) ease, border-color var(--t-fast) ease;
+  box-shadow: inset 0 0 0 1px var(--line-3);
+  transition:
+    background-color var(--t-fast) ease,
+    box-shadow var(--t-fast) ease;
 }
 .switch__dot {
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 1.1rem;
-  height: 1.1rem;
+  top: 4px;
+  left: 4px;
+  width: calc(1.5rem - 8px);
+  height: calc(1.5rem - 8px);
   border-radius: 50%;
   background: var(--text-2);
-  transition: transform var(--t-mid) var(--ease-out), background-color var(--t-fast) ease;
+  transition:
+    transform 240ms var(--ease-out),
+    background-color var(--t-fast) ease;
 }
 .switch[aria-checked='true'] .switch__track {
-  background: rgb(var(--lit-rgb) / 0.25);
-  border-color: rgb(var(--lit-rgb) / 0.7);
+  background: var(--text-bright);
+  box-shadow: inset 0 0 0 1px var(--text-bright);
 }
 .switch[aria-checked='true'] .switch__dot {
   transform: translateX(1rem);
-  background: var(--lit);
+  background: var(--bg);
 }
-.switch[aria-checked='true'] .switch__label {
-  color: var(--text);
+.switch:active .switch__dot {
+  transform: scale(0.86);
+}
+.switch[aria-checked='true']:active .switch__dot {
+  transform: translateX(1rem) scale(0.86);
 }
 
-/* Film-strip meter */
+/* ─── Meter: a thin five-step line, always with words ─── */
 .meter {
   display: grid;
-  grid-template-columns: minmax(7.5rem, auto) auto 1fr;
+  grid-template-columns: 6.5rem 5.5rem 1fr;
   align-items: center;
-  gap: var(--s-3);
-  font-size: var(--fs-sm);
+  gap: 1rem;
 }
 .meter__label {
-  color: var(--text-2);
+  color: var(--text-3);
+  font-size: var(--fs-sm);
 }
 .meter__strip {
-  --meter: var(--lit);
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 3px;
-  padding: 4px 5px;
-  border-radius: 4px;
-  background: var(--bg-deep);
-  /* sprocket holes */
-  background-image:
-    radial-gradient(circle at 50% 50%, var(--surface-3) 1.2px, transparent 1.6px);
-  background-size: 7px 100%;
-  background-repeat: repeat-x;
-  background-position: 0 -6px;
 }
 .meter__frame {
-  width: 1rem;
-  height: 0.7rem;
-  border-radius: 2px;
-  background: var(--surface-3);
-  transition: background-color var(--t-mid) ease;
+  height: 3px;
+  background: var(--line-2);
 }
 .meter__frame.is-on {
-  background: var(--meter);
-  box-shadow: 0 0 8px -1px color-mix(in oklab, var(--meter) 70%, transparent);
+  background: var(--accent);
 }
 .meter__text {
-  color: var(--text-3);
-  font-size: var(--fs-xs);
+  color: var(--text);
 }

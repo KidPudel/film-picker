@@ -10,7 +10,7 @@ import { formatRuntime } from '../lib/format';
 import { EXPERIENCES, ENERGY_OPTIONS, TIME_OPTIONS } from '../data/vocab';
 import { Dialog } from './Overlay';
 import { Segmented } from './Controls';
-import { Poster, openFilm } from './FilmCase';
+import { Poster, openFilm } from './Poster';
 import './Jam.css';
 
 /**
@@ -86,7 +86,7 @@ export function Jam({ open }: { open: boolean }) {
   const summary = (t: Tonight) =>
     [TIME_OPTIONS.find((o) => o.value === t.time)?.label, ENERGY_OPTIONS.find((o) => o.value === t.energy)?.label, t.wants.length ? `хочется ${t.wants.map((w) => EXPERIENCES[w].gen).join(' и ')}` : null]
       .filter(Boolean)
-      .join(' · ') || 'вечер пока не описан';
+      .join(', ') || 'вечер пока не описан';
 
   return (
     <Dialog open={open} onClose={close} title="Смотреть вместе" subtitle="Выбираем честно: каждый голосует сам, у каждого одно вето." kind="drawer">
@@ -173,7 +173,7 @@ export function Jam({ open }: { open: boolean }) {
                   <div className="jam-film__body">
                     <p className="jam-film__title">{f.title}</p>
                     <p className="jam-film__meta">
-                      {formatRuntime(f.runtime)} · {f.ed.experiences.slice(0, 2).map((e) => EXPERIENCES[e].label).join(', ')}
+                      {formatRuntime(f.runtime)}, {f.ed.experiences.slice(0, 2).map((e) => EXPERIENCES[e].label).join(', ')}
                     </p>
                     <div className="jam-film__votes">
                       <Segmented<Vote | 'none'>
@@ -221,9 +221,10 @@ export function Jam({ open }: { open: boolean }) {
               <motion.div key={winner?.id ?? 'none'} className="jam__result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} aria-live="polite">
                 {winner ? (
                   <>
-                    <p className="eyebrow">{both.includes(winner) ? 'Вы оба хотите' : `Компромисс · решающий голос у ${PARTNER.gen}`}</p>
-                    <p className="jam__winner display">{winner.title}</p>
-                    <p className="jam__why">{winner.ed.fitLine}</p>
+                    <p className="jam__winner">{winner.title}</p>
+                    <p className="jam__why">
+                      <strong>{both.includes(winner) ? 'Вы оба хотите этот фильм.' : `Компромисс: решающий голос у ${PARTNER.gen}.`}</strong> {winner.ed.fitLine}
+                    </p>
                     <button
                       type="button"
                       className="btn btn--primary"

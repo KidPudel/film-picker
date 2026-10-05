@@ -17,3 +17,8 @@ export function Reason({ tone, text }: { tone: Tone; text: string }) {
     </li>
   );
 }
+
+export function ToneIcon({ tone, className = '' }: { tone: Tone; className?: string }) {
+  const Icon = ICON[tone];
+  return <Icon className={`reason__icon reason__icon--${tone} ${className}`} aria-hidden="true" />;
+}

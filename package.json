@@ -1,18 +1,19 @@
 {
-  "name": "polutma-film-picker",
+  "name": "film-for-tonight",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Полутьма — прототип сервиса выбора фильма на сегодняшний вечер",
+  "description": "Кино на вечер — прототип сервиса, который помогает выбрать фильм на сегодняшний вечер и понять, почему он подходит",
   "scripts": {
     "dev": "vite",
+    "media": "node scripts/build-posters.mjs",
     "posters": "node scripts/build-posters.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@fontsource-variable/geologica": "^5.3.0",
+    "@fontsource-variable/onest": "^5.3.1",
     "lucide-react": "^1.52.0",
     "motion": "^14.0.0",
     "react": "^19.3.0",

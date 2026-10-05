@@ -1,151 +1,151 @@
 /*
- * Design tokens — «Полутьма».
- * World: a pitch-dark hall where light is the only colour. The projector beam
- * (WebGL, see Projector.tsx) carries the colours of the film; the interface
- * itself stays neutral — white type, hairlines, one cool highlight from the
- * beam (--lit). Red velvet appears only on the seats.
- * Every colour in components comes from here so light theme and high contrast work.
+ * Design tokens — «Кино на вечер».
+ *
+ * A strong neutral base holds everything: black hall, white type, three greys,
+ * hairlines. The interface has no colour of its own. Colour comes from the
+ * films: each film's accent (editorial `accent`) tints only that film's own
+ * marks — its session bar, its page — and the projector carries the colours
+ * of its frames into the hall.
  */
+
+/* Metric-matched fallback so the layout doesn't jump while Onest loads. */
+@font-face {
+  font-family: 'Onest Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Roboto');
+  size-adjust: 104%;
+}
+
 :root {
-  --bg: #000000;
-  --bg-deep: #000000;
-  --surface: #0d0e12;
-  --surface-2: #16181e;
-  --surface-3: #22252d;
+  /* ── Neutral ramp ── */
+  --z0: #050506;
+  --z1: #09090b;
+  --z2: #111113;
+  --z3: #18181b;
+  --z4: #232327;
+  --z5: #333338;
+  --z6: #505057;
+  --z7: #7f7f86;
+  --z8: #a8a8ae;
+  --z9: #ececee;
+  --z10: #fafafa;
+
+  /* ── Roles ── */
+  --bg: var(--z1);
+  --bg-deep: var(--z0);
+  --surface: var(--z2);
+  --surface-2: var(--z3);
+  --panel: #141416;
+  --line: rgb(255 255 255 / 0.09);
+  --line-2: rgb(255 255 255 / 0.16);
+  --line-3: rgb(255 255 255 / 0.32);
+  --text: var(--z9);
+  --text-2: var(--z8);
+  --text-3: var(--z7);
+  --text-bright: var(--z10);
+  --text-off: var(--z6);
+
+  --primary: var(--z10);
+  --primary-ink: var(--z0);
+  --primary-hover: #ffffff;
+  --focus: var(--z10);
   --scrim: rgb(0 0 0 / 0.72);
 
-  --line: rgb(255 255 255 / 0.08);
-  --line-2: rgb(255 255 255 / 0.15);
-  --line-3: rgb(255 255 255 / 0.28);
+  /* A film's own colour. Overridden inline on a film's card and page. */
+  --accent: var(--z10);
 
-  /* AA on black: text 19:1, text-2 11:1, text-3 6.6:1 */
-  --text: #f2f5fa;
-  --text-2: #bac2d0;
-  --text-3: #8a93a6;
-  --text-inverse: #000000;
+  /* The projector's current light (set by the renderer; hall glows only). */
+  --beam: 200 214 226;
 
-  /* Light */
-  --beam: 214 240 255;
-  --lit: #a6ecff;
-  --lit-rgb: 166 236 255;
-  --velvet: #b3122f;
-
-  /* Semantic (always paired with an icon) */
-  --ok: #8fe0b4;
-  --warn: #ffd486;
-  --no: #ff9a9a;
-  --ok-bg: rgb(143 224 180 / 0.12);
-  --warn-bg: rgb(255 212 134 / 0.12);
-  --no-bg: rgb(255 154 154 / 0.12);
-
-  /* Ticket stock */
-  --paper: #eef2f8;
-  --paper-ink: #0b0e16;
-  --paper-line: rgb(11 14 22 / 0.22);
-
-  /* Type: one family. Geologica carries both the giant sentence and the UI. */
-  --font-display: 'Geologica Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-ui: var(--font-display);
-  --font-mono: var(--font-display);
+  /* ── Type ── */
+  --font-ui: 'Onest Variable', 'Onest', 'Onest Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: var(--font-ui);
 
   --fs-xs: 0.8125rem;
   --fs-sm: 0.9375rem;
   --fs-md: 1.0625rem;
   --fs-lg: 1.25rem;
-  --fs-xl: 1.5rem;
-  --fs-2xl: clamp(2rem, 1.4rem + 2.2vw, 3rem);
-  --fs-3xl: clamp(2.75rem, 1.6rem + 4.4vw, 5.75rem);
-  --fs-hero: clamp(1.75rem, 1.1rem + 2.4vw, 3.1rem);
+  --fs-xl: clamp(1.375rem, 1.2rem + 0.55vw, 1.6875rem);
+  --fs-2xl: clamp(1.75rem, 1.35rem + 1.3vw, 2.5rem);
+  --fs-3xl: clamp(2.25rem, 1.3rem + 3.4vw, 4.25rem);
+  --fs-display: clamp(2.125rem, 1.1rem + 3.7vw, 5.25rem);
 
-  --s-1: 0.25rem;
-  --s-2: 0.5rem;
-  --s-3: 0.75rem;
-  --s-4: 1rem;
-  --s-5: 1.5rem;
-  --s-6: 2.25rem;
-  --s-7: 3.5rem;
-  --s-8: 6rem;
-  --gutter: clamp(1.25rem, 0.6rem + 3vw, 4rem);
-  --maxw: 92rem;
+  /* ── Space (4px base) ── */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+  --s8: 4rem;
+  --s9: 6rem;
+  --s10: 8rem;
 
-  --r-sm: 6px;
-  --r-md: 12px;
-  --r-lg: 18px;
-  --r-xl: 28px;
+  --gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
+  --max: 82rem;
+  --header-h: 3.5rem;
+
+  /* ── Shape: almost square, like the screen ── */
+  --r-xs: 2px;
+  --r-sm: 3px;
+  --r-md: 4px;
+  --r-lg: 8px;
   --r-pill: 999px;
 
-  --shadow-1: 0 2px 6px rgb(0 0 0 / 0.5);
-  --shadow-2: 0 10px 30px -8px rgb(0 0 0 / 0.7);
-  --shadow-3: 0 30px 80px -20px rgb(0 0 0 / 0.85);
+  /* ── Depth ── */
+  --shadow-pop: 0 24px 64px -16px rgb(0 0 0 / 0.85), 0 2px 8px rgb(0 0 0 / 0.5);
 
-  /* Motion (Emil Kowalski / Apple curves) */
+  /* ── Motion ── */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
   --t-press: 140ms;
   --t-fast: 180ms;
-  --t-mid: 260ms;
+  --t-mid: 240ms;
 
-  --focus: 0 0 0 2px var(--bg), 0 0 0 4px var(--lit);
-  --beam-strength: 1;
+  --tray-h: 0px;
   color-scheme: dark;
 }
 
-/* «Свет в зале» — the lights are on: the beam disappears, paper-white room */
+/* ── «Свет в зале включён» — light theme for bright rooms and glare-sensitive eyes. ── */
 :root[data-theme='light'] {
-  --bg: #f3f4f7;
-  --bg-deep: #e7e9ef;
-  --surface: #ffffff;
-  --surface-2: #eef0f5;
-  --surface-3: #e1e4ec;
-  --scrim: rgb(20 22 30 / 0.45);
-  --line: rgb(10 14 30 / 0.1);
-  --line-2: rgb(10 14 30 / 0.18);
-  --line-3: rgb(10 14 30 / 0.32);
-  --text: #0b0e16;
-  --text-2: #3c4456;
-  --text-3: #5d6578;
-  --text-inverse: #ffffff;
-  --beam: 0 90 140;
-  --lit: #0b6f99;
-  --lit-rgb: 11 111 153;
-  --ok: #1d6b44;
-  --warn: #8a5a00;
-  --no: #b02a2a;
-  --ok-bg: rgb(29 107 68 / 0.1);
-  --warn-bg: rgb(138 90 0 / 0.1);
-  --no-bg: rgb(176 42 42 / 0.08);
-  --paper: #ffffff;
-  --shadow-1: 0 2px 6px rgb(10 14 30 / 0.08);
-  --shadow-2: 0 10px 30px -10px rgb(10 14 30 / 0.2);
-  --shadow-3: 0 30px 80px -24px rgb(10 14 30 / 0.3);
-  --beam-strength: 0;
+  --z0: #e8e8e5;
+  --z1: #f4f4f2;
+  --z2: #ffffff;
+  --z3: #ececea;
+  --z4: #dcdcd9;
+  --z5: #c4c4c1;
+  --z6: #8f8f95;
+  --z7: #6a6a70;
+  --z8: #4a4a50;
+  --z9: #111113;
+  --z10: #050506;
+  --panel: #ffffff;
+  --line: rgb(0 0 0 / 0.09);
+  --line-2: rgb(0 0 0 / 0.16);
+  --line-3: rgb(0 0 0 / 0.36);
+  --text-off: #7a7a80;
+  --primary: #111113;
+  --primary-ink: #ffffff;
+  --primary-hover: #000000;
+  --scrim: rgb(0 0 0 / 0.4);
+  --shadow-pop: 0 20px 50px -18px rgb(0 0 0 / 0.35), 0 2px 6px rgb(0 0 0 / 0.08);
   color-scheme: light;
 }
 
+/* ── Повышенный контраст ── */
 :root[data-contrast='more'] {
-  --line: rgb(255 255 255 / 0.3);
-  --line-2: rgb(255 255 255 / 0.45);
-  --line-3: rgb(255 255 255 / 0.65);
-  --text-2: #dde3ee;
-  --text-3: #c3cad8;
+  --text-2: var(--z9);
+  --text-3: var(--z8);
+  --line: rgb(255 255 255 / 0.2);
+  --line-2: rgb(255 255 255 / 0.32);
 }
 :root[data-theme='light'][data-contrast='more'] {
-  --line: rgb(10 14 30 / 0.4);
-  --line-2: rgb(10 14 30 / 0.55);
-  --line-3: rgb(10 14 30 / 0.75);
-  --text-2: #1c2230;
-  --text-3: #2c3344;
-}
-@media (prefers-contrast: more) {
-  :root:not([data-contrast='normal']):not([data-theme='light']) {
-    --line: rgb(255 255 255 / 0.3);
-    --line-2: rgb(255 255 255 / 0.45);
-    --text-2: #dde3ee;
-    --text-3: #c3cad8;
-  }
+  --line: rgb(0 0 0 / 0.24);
+  --line-2: rgb(0 0 0 / 0.38);
 }
 
+/* ── Крупный текст ── */
 :root[data-text='large'] {
   font-size: 112.5%;
 }

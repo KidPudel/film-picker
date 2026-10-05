@@ -5,7 +5,7 @@ import { FILM_BY_ID } from '../data/films';
 import { useUI } from '../store/useUI';
 import { formatRuntime } from '../lib/format';
 import { Dialog } from './Overlay';
-import { openFilm } from './FilmCase';
+import { openFilm } from './Poster';
 import './Roulette.css';
 
 /**
@@ -81,10 +81,9 @@ function Reel({ pool }: { pool: number[] }) {
       <div className="reel__result" aria-live="assertive">
         {chosen ? (
           <motion.div className="reel__card" style={{ ['--accent' as string]: chosen.ed.accent }} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', duration: 0.45, bounce: 0.15 }}>
-            <p className="eyebrow">Сегодня смотрим</p>
-            <p className="reel__title display">{chosen.title}</p>
+            <p className="reel__title">{chosen.title}</p>
             <p className="reel__meta">
-              {formatRuntime(chosen.runtime)} · {chosen.year}
+              {formatRuntime(chosen.runtime)}, {chosen.year}. Можно согласиться или крутить ещё — выбор за вами.
             </p>
             <p className="reel__fit">{chosen.ed.fitLine}</p>
             <div className="reel__acts">

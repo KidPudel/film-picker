@@ -43,9 +43,9 @@ function apply(next: Route) {
 
 type VT = { ready: Promise<void>; finished: Promise<void>; updateCallbackDone: Promise<void> };
 
-function withTransition(next: Route) {
+function withTransition(next: Route, instant = false) {
   const doc = document as Document & { startViewTransition?: (cb: () => void) => VT };
-  if (!doc.startViewTransition || reducedMotion() || document.visibilityState !== 'visible') return apply(next);
+  if (instant || !doc.startViewTransition || reducedMotion() || document.visibilityState !== 'visible') return apply(next);
   const t = doc.startViewTransition(() => apply(next));
   // A skipped transition (tab hidden, rapid clicks) is harmless — the DOM still updates.
   [t.ready, t.finished, t.updateCallbackDone].forEach((p) => p.catch(() => {}));
@@ -54,11 +54,15 @@ function withTransition(next: Route) {
 /** How many in-app entries we pushed — so «back» never leaves the site. */
 let depth = 0;
 
-export function navigate(path: string, opts: { filmId?: number } = {}) {
-  if (opts.filmId !== undefined) transitionFilmId = opts.filmId;
-  depth++;
-  history.pushState({ depth }, '', `#${path}`);
-  withTransition(parse(`#${path}`));
+/** `instant` skips the transition — keyboard-initiated moves should never animate. */
+export function navigate(path: string, opts: { filmId?: number; instant?: boolean; replace?: boolean } = {}) {
+  transitionFilmId = opts.filmId ?? null;
+  if (opts.replace) history.replaceState({ depth }, '', `#${path}`);
+  else {
+    depth++;
+    history.pushState({ depth }, '', `#${path}`);
+  }
+  withTransition(parse(`#${path}`), opts.instant);
 }
 
 /** Back to wherever the viewer came from inside the app, or to the catalog. */

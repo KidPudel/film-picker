@@ -1,0 +1,100 @@
+/* The film at the front: its frames fill the screen ahead and fade into the hall. */
+.backdrop {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.backdrop__frames {
+  position: absolute;
+  inset: 0;
+}
+.backdrop__aim {
+  position: absolute;
+  left: 46%;
+  right: 2%;
+  top: 14%;
+  bottom: 30%;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .backdrop__aim {
+    left: 4%;
+    right: 4%;
+    top: 12%;
+    bottom: 40%;
+  }
+}
+.backdrop__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 40%;
+  opacity: 0;
+  transform: scale(1.03);
+  transition:
+    opacity 1200ms ease,
+    transform 7600ms linear;
+}
+.backdrop__img.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+/* The film dissolves into the hall: it fades out on the left (where the words are),
+   at the top (under the header) and at the bottom, and the hall with its light shows through. */
+.backdrop__frames {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.08) 26%, rgb(0 0 0 / 0.45) 50%, #000 74%),
+    linear-gradient(180deg, transparent 0%, #000 20%, #000 60%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.08) 26%, rgb(0 0 0 / 0.45) 50%, #000 74%),
+    linear-gradient(180deg, transparent 0%, #000 20%, #000 60%, transparent 100%);
+  mask-composite: intersect;
+}
+.backdrop__ctl {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--s4);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--s1);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+}
+.backdrop__ctl .icon-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: #fafafa;
+  background: rgb(0 0 0 / 0.35);
+}
+.backdrop__ctl .icon-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+@media (pointer: coarse) {
+  .backdrop__ctl .icon-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+.backdrop__count {
+  margin-left: var(--s2);
+  color: #fafafa;
+  font-variant-numeric: tabular-nums;
+}
+.backdrop__credit {
+  margin-left: var(--s3);
+  color: rgb(250 250 250 / 0.72);
+}
+
+
+/* Shared poster flight between the wall and the film page. */
+::view-transition-group(poster-hero) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.77, 0, 0.175, 1);
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+}

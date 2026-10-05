@@ -1,0 +1,261 @@
+/* ─── The poster wall: every card shares the same seven rows ─────────────── */
+.wall {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(12.75rem, 100%), 1fr));
+  column-gap: clamp(1.25rem, 2.4vw, 2.25rem);
+  row-gap: 0.55rem;
+}
+.fcard {
+  grid-row: span 7;
+  display: grid;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+.fcard__in {
+  grid-row: 1 / -1;
+  display: grid;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+
+/* The poster is the card. */
+.fcard__poster {
+  position: relative;
+  display: block;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 24px 40px -24px rgb(0 0 0 / 0.95);
+  transition: transform 260ms var(--ease-out);
+}
+.fcard__poster .poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fcard__poster:active {
+  transform: scale(0.985);
+}
+@media (hover: hover) and (pointer: fine) {
+  .fcard__in:hover .fcard__poster {
+    transform: translateY(-4px);
+  }
+}
+.fcard__stamp {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: var(--r-xs);
+  background: rgb(0 0 0 / 0.82);
+  color: #fafafa;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.fcard__stamp svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.fcard__title {
+  font-size: var(--fs-xl);
+  line-height: 1.05;
+  align-self: end;
+}
+.fcard__title a {
+  color: inherit;
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .fcard__title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.14em;
+  }
+}
+.fcard__sub {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+  line-height: 1.3;
+}
+.fcard__age {
+  color: var(--text-2);
+}
+.fcard__words {
+  font-size: var(--fs-sm);
+  gap: 0 0.7rem;
+  align-self: start;
+}
+.fcard__why {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+.fcard__fit {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+.fcard__reasons {
+  font-size: var(--fs-sm);
+  gap: 0.3rem;
+}
+.fcard__acts {
+  display: flex;
+  gap: 0;
+  margin-left: -0.7rem;
+  padding-bottom: var(--s6);
+  align-self: start;
+}
+
+/* ─── Session: now → the end of the film, to scale on one shared clock ─── */
+.session {
+  display: grid;
+  gap: 0.45rem;
+  align-self: start;
+  margin-top: 0.1rem;
+}
+.session__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.7rem;
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+}
+.session__end {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+.session__end time,
+.session__runtime {
+  font-variant-numeric: tabular-nums;
+}
+.session__track {
+  position: relative;
+  height: 3px;
+  background: var(--line-2);
+}
+.session__fill,
+.session__over {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+/* The film's own colour: the only colour on the card besides its poster. */
+.session__fill {
+  left: 0;
+  background: var(--accent);
+  transition: width 420ms var(--ease-out);
+}
+.session__over {
+  background: repeating-linear-gradient(-45deg, var(--text-2) 0 1.5px, transparent 1.5px 4px);
+  transition:
+    left 420ms var(--ease-out),
+    width 420ms var(--ease-out);
+}
+.session__budget {
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  border-left: 1px solid var(--text-bright);
+  transition: left 420ms var(--ease-out);
+}
+.session--dim .session__fill {
+  background: var(--text-3);
+}
+.session__soon {
+  color: var(--text-bright);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+}
+
+/* «Почти подходит»: the same facts, less light. */
+.fcard--dim .fcard__poster {
+  filter: saturate(0.4) brightness(0.62);
+  transition:
+    transform 260ms var(--ease-out),
+    filter 320ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .fcard--dim .fcard__in:hover .fcard__poster {
+    filter: none;
+  }
+}
+.fcard--dim .fcard__title {
+  color: var(--text);
+}
+
+/* Legend for the bars */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+.legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.legend__item time {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.legend__bar {
+  width: 1.75rem;
+  height: 3px;
+  background: var(--text-2);
+}
+.legend__budget {
+  height: 1rem;
+  border-left: 1px solid var(--text-bright);
+}
+
+.friends-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+}
+.friends-line__faces {
+  display: inline-flex;
+}
+.friends-line__faces .face {
+  width: 1.35rem;
+  height: 1.35rem;
+  font-size: 0.65rem;
+}
+.friends-line__faces .face + .face {
+  margin-left: -0.35rem;
+}
+
+@media (max-width: 640px) {
+  .wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--s4);
+  }
+  .fcard__title {
+    font-size: var(--fs-lg);
+  }
+  .fcard__fit {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .fcard__acts {
+    margin-left: -0.75rem;
+    padding-bottom: var(--s5);
+  }
+}

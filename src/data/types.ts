@@ -150,6 +150,18 @@ export interface Editorial {
 
 // ─── App model ─────────────────────────────────────────────────────────────
 
+export interface Still {
+  src640: string;
+  src1280: string;
+  /** Small blurred copy the projector shines through the haze. */
+  beam: string;
+  lqip: string;
+  mean: string;
+  palette: string[];
+  /** Page the frame was taken from (provenance). */
+  source: string;
+}
+
 export interface Film {
   id: number;
   slug: string;
@@ -179,7 +191,11 @@ export interface Film {
   awards: RawAward[];
   ratings: { kp?: RawRating; imdb?: RawRating };
   trailerUrl?: string;
-  poster: { src360: string; src720: string; lqip: string };
+  poster: { src360: string; src720: string; lqip: string; mean: string; beam: string; palette: string[] };
+  /** Frames for the film-page screen (textless, spoiler-safe), with the light they cast. */
+  stills: Still[];
+  /** Projection aspect ratio from the dataset, e.g. 1.85 or 2.35. */
+  aspectRatio: number;
   premieres: { label: string; date: string | null; event: string }[];
   finances: { label: string; value: string; note?: string }[];
   sources: RawMovie['sources'];

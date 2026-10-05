@@ -1,64 +1,52 @@
 import { create } from 'zustand';
 
 /**
- * The projector is one continuous light that lives behind the whole app.
- * Pages describe the *scene* they want (where the booth is, where the beam
- * points, which film's colours it carries); the renderer eases toward it.
+ * The projector is one continuous light behind the viewer's head.
+ * Pages describe the scene; the renderer eases toward it.
+ *
+ *  catalog — no screen: the beam pours past you into the dark ahead and takes
+ *            the colours of whichever film you point at.
+ *  film    — the beam lands on the page's screen element (its DOM rect is the
+ *            projection target), carrying the frame that is on screen.
  */
-export interface Scene {
-  /** Source position, 0..1 of the viewport, y measured from the bottom. */
-  src: [number, number];
-  /** Beam direction in degrees (0 = right, 90 = up). */
-  dir: number;
-  /** Half-angle of the fan in degrees. */
-  spread: number;
-  intensity: number;
-  /** Booth window + glare at the source (0..1). Off when the source is behind the viewer. */
-  booth: number;
-  /** 16 colours across the beam, left → right of the projected image. */
-  palette: string[];
-  /** How much scrolling dims the beam (0 = never, 1 = to almost nothing). */
-  scrollDim: number;
+export interface Frame {
+  /** URL of a small blurred frame the light is made of. Empty = the house reel (default cyan light). */
+  image: string;
+  /** Mean colour of that frame (hex), for spill on walls and seat rims. */
+  mean: string;
 }
 
-export const DEFAULT_PALETTE = [
-  '#3fc4dc', '#8ee8ff', '#ffffff', '#2aa7c4', '#b9f1ff', '#4f8dff', '#e8fbff', '#22d3c5',
-  '#ffffff', '#6fd6ff', '#9ab8ff', '#d6f7ff', '#1fb2c9', '#ffffff', '#63e0e8', '#3a7cf0',
-];
-
-export const CATALOG_SCENE: Scene = {
-  src: [0.36, 0.2],
-  dir: 52,
-  spread: 25,
-  intensity: 1,
-  booth: 1,
-  palette: DEFAULT_PALETTE,
-  scrollDim: 0.7,
-};
-
-export const CATALOG_SCENE_PHONE: Scene = {
-  ...CATALOG_SCENE,
-  src: [0.82, 0.16],
-  dir: 104,
-  spread: 17,
-  intensity: 0.85,
-};
+export const HOUSE: Frame = { image: '', mean: '#a9c6d6' };
 
 interface ProjectorState {
-  scene: Scene;
-  /** Palette override while hovering a film (the projector "previews" it). */
-  preview: string[] | null;
+  mode: 'catalog' | 'film';
+  frame: Frame;
+  /** Temporary frame while a film is hovered / focused / centred in the list. */
+  preview: Frame | null;
+  /** Film-page screen element; the beam aims at its bounding rect. */
+  screen: HTMLElement | null;
+  /** The band where the row of seats in front of you is drawn (rendered by the projector). */
+  seats: HTMLElement | null;
   warpAt: number;
-  setScene: (s: Partial<Scene>) => void;
-  setPreview: (p: string[] | null) => void;
+  setMode: (mode: ProjectorState['mode']) => void;
+  setFrame: (f: Frame) => void;
+  setPreview: (f: Frame | null) => void;
+  setScreen: (el: HTMLElement | null) => void;
+  setSeats: (el: HTMLElement | null) => void;
   warp: () => void;
 }
 
 export const useProjector = create<ProjectorState>()((set) => ({
-  scene: CATALOG_SCENE,
+  mode: 'catalog',
+  frame: HOUSE,
   preview: null,
+  screen: null,
+  seats: null,
   warpAt: -1e9,
-  setScene: (s) => set((st) => ({ scene: { ...st.scene, ...s } })),
+  setMode: (mode) => set({ mode }),
+  setFrame: (frame) => set({ frame }),
   setPreview: (preview) => set({ preview }),
+  setScreen: (screen) => set({ screen }),
+  setSeats: (seats) => set({ seats }),
   warp: () => set({ warpAt: performance.now() }),
 }));

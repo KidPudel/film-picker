@@ -11,20 +11,25 @@ export function availabilityText(a: Av): string {
     case 'premium':
       return 'Премиум';
     case 'rent':
-      return `Аренда · ${a.price} ₽`;
+      return `Аренда, ${a.price} ₽`;
     case 'soon':
-      return `Скоро · с ${formatIsoDay(a.date)}`;
+      return `Скоро, с ${formatIsoDay(a.date)}`;
   }
 }
 
+const SHORT = { included: 'В подписке', premium: 'Премиум', rent: 'Аренда', soon: 'Скоро' };
 const ICON = { included: Check, premium: Crown, rent: KeyRound, soon: Bell };
 
-export function AvailabilityLabel({ a, variant = 'inline' }: { a: Av; variant?: 'inline' | 'ribbon' }) {
+/**
+ * inline — the full label (price, date) next to facts;
+ * cover  — a short tag on the poster itself, so access is known before reading anything else.
+ */
+export function AvailabilityLabel({ a, variant = 'inline' }: { a: Av; variant?: 'inline' | 'cover' }) {
   const Icon = ICON[a.kind];
   return (
     <span className={`avail avail--${a.kind} avail--${variant}`}>
       <Icon aria-hidden="true" />
-      {availabilityText(a)}
+      {variant === 'cover' ? SHORT[a.kind] : availabilityText(a)}
     </span>
   );
 }

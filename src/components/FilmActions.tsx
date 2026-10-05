@@ -3,7 +3,6 @@ import { ArrowLeft, Bookmark, BookmarkCheck, ChevronRight, Plus, ThumbsDown } fr
 import type { Film } from '../data/types';
 import { useStore, SOMEDAY, type Dislike } from '../store/useStore';
 import { toast, useUI } from '../store/useUI';
-import { FILM_BY_ID } from '../data/films';
 import { SAVE_REASONS } from '../data/vocab';
 import { suggestShelfNames } from '../lib/shelfNames';
 import { hasVoiceover } from '../lib/match';
@@ -111,7 +110,7 @@ function ShelfMenu({ film, onDone }: { film: Film; onDone: () => void }) {
       <p className="menu__lead">Билет — на сегодня, полка — на потом. Отметьте, чем фильм зацепил: так будет проще вернуться к нему в нужный вечер.</p>
 
       <fieldset className="menu__group">
-        <legend className="menu__legend">Почему сохраняете · по желанию</legend>
+        <legend className="menu__legend">Почему сохраняете (по желанию)</legend>
         <div className="menu__chips">
           {SAVE_REASONS.map((r) => (
             <button key={r} type="button" className="chip" aria-pressed={reason === r} onClick={() => setReason(reason === r ? undefined : r)}>
@@ -336,4 +335,3 @@ function NotThisMenu({ film, onDone }: { film: Film; onDone: () => void }) {
   );
 }
 
-export const filmById = (id: number) => FILM_BY_ID.get(id)!;
