@@ -16,7 +16,7 @@ import { SpoilerControl } from '../components/SettingsPanel';
 import { Assistant } from '../components/Assistant';
 import { AvailabilityLabel } from '../components/Availability';
 import { NotThisButton, ShelfButton, TicketButton } from '../components/FilmActions';
-import { FriendsLine, Poster, openFilm } from '../components/Poster';
+import { Poster, openFilm } from '../components/Poster';
 import { Reason, ToneIcon } from '../components/ReasonIcon';
 import { FilmBackdrop } from '../components/Screen';
 import { Seats } from '../components/Seats';
@@ -501,6 +501,15 @@ function StorySection({ film: f }: { film: Film }) {
         ) : (
           <Veil label="Завязка скрыта: вы просили ничего не рассказывать" action="Показать одну фразу" onReveal={() => setPeek(1)} />
         )}
+        {f.stills.length > 1 && (
+          <ul className="story__frames" aria-label="Кадры из фильма">
+            {f.stills.slice(0, 3).map((st, i) => (
+              <li key={st.src640}>
+                <img src={st.src640} alt={`Кадр ${i + 1} из фильма «${f.title}»`} loading="lazy" decoding="async" style={{ backgroundImage: `url(${st.lqip})` }} />
+              </li>
+            ))}
+          </ul>
+        )}
         {level >= 1 && (
           <ul className="story__themes" aria-label="Темы">
             {f.themes.map((t) => (
@@ -614,7 +623,7 @@ function RatingsSection({ film: f }: { film: Film }) {
               })}
             </ul>
           ) : (
-            <p className="score__empty">Никто из вашего круга ещё не смотрел. Можно стать первым — и посоветовать.</p>
+            <p className="score__empty">Никто из вашего круга ещё не смотрел. Посмотрите первыми — и посоветуйте.</p>
           )}
         </div>
       </div>
@@ -664,21 +673,19 @@ function Score({ name, value, votes }: { name: string; value: number; votes: str
 function PeopleSection({ film: f }: { film: Film }) {
   return (
     <Section id="people" title="Кто снял и кто играет">
-      <div className="people">
-        <div className="people__dir">
-          <p className="people__label">Режиссёр</p>
-          <p className="people__dirname">{f.directors.join(', ')}</p>
+      <dl className="credits">
+        <div className="credits__lead">
+          <dt>{f.directors.length > 1 ? 'Режиссёры' : 'Режиссёр'}</dt>
+          <dd>{f.directors.join(', ')}</dd>
         </div>
-        <ul className="cast">
-          {f.cast.map((c) => (
-            <li key={c.name_ru}>
-              <span className="cast__name">{c.name_ru}</span>
-              {c.role && <span className="cast__role">{c.role}</span>}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <dl className="crew">
+        {f.cast.map((c) => (
+          <div key={c.name_ru}>
+            <dt>{c.role ?? 'В ролях'}</dt>
+            <dd>{c.name_ru}</dd>
+          </div>
+        ))}
+      </dl>
+      <dl className="credits credits--crew">
         {f.crew.map((c) => (
           <div key={c.label}>
             <dt>{c.label}</dt>
@@ -708,7 +715,7 @@ function DetailsSection({ film: f }: { film: Film }) {
   ];
   return (
     <Section id="details" title="Детали">
-      <dl className="details">
+      <dl className="credits">
         {rows.map(([k, v], i) => (
           <div key={k + i}>
             <dt>{k}</dt>
@@ -775,21 +782,24 @@ function AltSection({ film: f }: { film: Film }) {
   return (
     <Section id="alts" title="Если не совсем то" lead="Похожие фильмы, которые отличаются в одном понятном направлении.">
       <ul className="alts">
-        {alts.map(({ film: a, label }) => (
-          <li key={a.id} className="alt">
-            <a href={`#/film/${a.slug}`} onClick={(e) => openFilm(a, e)} className="alt__link">
-              <Poster film={a} sizes="96px" className="alt__poster" />
-              <span className="alt__body">
-                <span className="alt__label">{label}</span>
+        {alts.map(({ film: a, label }) => {
+          const still = a.stills[0];
+          return (
+            <li key={a.id} className="alt">
+              <a href={`#/film/${a.slug}`} onClick={(e) => openFilm(a, e)} className="alt__link">
+                {still ? (
+                  <img className="alt__still" src={still.src640} alt="" loading="lazy" decoding="async" style={{ backgroundImage: `url(${still.lqip})` }} />
+                ) : (
+                  <Poster film={a} sizes="240px" className="alt__still" />
+                )}
                 <span className="alt__title">{a.title}</span>
                 <span className="alt__meta">
-                  {formatRuntime(a.runtime)}, {SCALE_TEXT.intensity[a.ed.scales.intensity]}
+                  {label.toLowerCase()}, {formatRuntime(a.runtime)}, {SCALE_TEXT.intensity[a.ed.scales.intensity]}
                 </span>
-              </span>
-            </a>
-            <FriendsLine film={a} />
-          </li>
-        ))}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </Section>
   );

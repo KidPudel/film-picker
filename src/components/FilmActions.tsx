@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Bookmark, BookmarkCheck, ChevronRight, Plus, ThumbsDown } from 'lucide-react';
+import { ArrowLeft, Bell, BellRing, Bookmark, BookmarkCheck, ChevronRight, Plus, ThumbsDown } from 'lucide-react';
 import type { Film } from '../data/types';
 import { useStore, SOMEDAY, type Dislike } from '../store/useStore';
 import { toast, useUI } from '../store/useUI';
 import { SAVE_REASONS } from '../data/vocab';
 import { suggestShelfNames } from '../lib/shelfNames';
 import { hasVoiceover } from '../lib/match';
-import { eveningKey } from '../lib/format';
+import { eveningKey, formatIsoDay } from '../lib/format';
 import { Popover } from './Overlay';
 import { TicketIcon } from './TicketIcon';
 import './FilmActions.css';
@@ -41,6 +41,34 @@ export function TicketButton({ film, variant = 'icon' }: { film: Film; variant?:
     >
       <TicketIcon filled={has} />
       {variant === 'full' && <span>{has ? 'Билет на сегодня' : 'На сегодня'}</span>}
+    </button>
+  );
+}
+
+// ─── 🔔 Напомнить (films not out yet) ──────────────────────────────────────
+
+export function RemindButton({ film }: { film: Film }) {
+  const on = useStore((s) => s.reminders.includes(film.id));
+  const toggle = useStore((s) => s.toggleReminder);
+  const a = film.ed.availability;
+  if (a.kind !== 'soon') return null;
+  const Icon = on ? BellRing : Bell;
+  return (
+    <button
+      type="button"
+      className={`act act--icon act--remind ${on ? 'is-on' : ''}`}
+      aria-pressed={on}
+      aria-label={`Напомнить о премьере «${film.title}», ${formatIsoDay(a.date)}`}
+      title={on ? 'Напомним в день премьеры' : 'Напомнить о премьере'}
+      onClick={() => {
+        toggle(film.id);
+        toast(on ? 'Напоминание отменено' : `Напомним ${formatIsoDay(a.date)}, когда «${film.title}» появится`, {
+          label: on ? 'Вернуть' : 'Отменить',
+          run: () => useStore.getState().toggleReminder(film.id),
+        });
+      }}
+    >
+      <Icon aria-hidden="true" />
     </button>
   );
 }
@@ -167,7 +195,7 @@ function ShelfMenu({ film, onDone }: { film: Film; onDone: () => void }) {
             className="btn btn--quiet btn--sm"
             onClick={() => {
               removeFromShelf(film.id, current.id);
-              toast(`«${film.title}» убран с полки`, { label: 'Вернуть', run: () => useStore.getState().saveToShelf(film.id, current.id, reason) });
+              toast(`Убрали «${film.title}» с полки`, { label: 'Вернуть', run: () => useStore.getState().saveToShelf(film.id, current.id, reason) });
               onDone();
             }}
           >
@@ -267,7 +295,7 @@ function NotThisMenu({ film, onDone }: { film: Film; onDone: () => void }) {
             onClick={() => {
               const tickets = useStore.getState().tickets;
               dismiss(film.id, { kind: 'tonight', evening: eveningKey() });
-              toast(`«${film.title}» отложен до завтра`, {
+              toast(`Отложили «${film.title}» до завтра`, {
                 label: 'Отменить',
                 run: () => {
                   useStore.getState().undismiss(film.id);

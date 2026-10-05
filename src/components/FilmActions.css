@@ -53,7 +53,8 @@
   background: var(--line);
 }
 
-/* Held / saved: filled, in white. */
+/* Held / saved / reminded: filled, in white. */
+.act--remind.is-on,
 .act--ticket.is-on,
 .act--shelf.is-on {
   color: var(--text-bright);

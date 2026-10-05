@@ -324,7 +324,7 @@ time,
   min-height: 2.5rem;
   padding: 0 0.85rem;
   border: 1px solid var(--line-2);
-  border-radius: var(--r-pill);
+  border-radius: var(--r-md);
   color: var(--text-2);
   font-size: var(--fs-sm);
   font-weight: 500;

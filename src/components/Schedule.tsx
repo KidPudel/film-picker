@@ -9,7 +9,7 @@ import { useStore } from '../store/useStore';
 import { useProjector } from '../store/useProjector';
 import { useMediaQuery } from '../lib/hooks';
 import { AvailabilityLabel } from './Availability';
-import { NotThisButton, ShelfButton, TicketButton } from './FilmActions';
+import { NotThisButton, RemindButton, ShelfButton, TicketButton } from './FilmActions';
 import { Poster, filmFrame, openFilm } from './Poster';
 import { Reason } from './ReasonIcon';
 import './Schedule.css';
@@ -70,7 +70,7 @@ export function FilmCard({ match: m, now, span, budget, dim }: { match: Match; n
   const f = m.film;
   const seen = useStore((s) => s.seen.includes(f.id));
   const shelf = useStore((s) => s.shelves.find((sh) => sh.items.some((i) => i.filmId === f.id)));
-  const blockers = m.reasons.filter((r) => r.tone === 'no');
+  const blockers = m.reasons.filter((r) => r.tone === 'no' && !(f.ed.availability.kind === 'soon' && r.text.startsWith('Выйдет')));
   const words = [...m.matchedWants, ...f.ed.experiences.filter((e) => !m.matchedWants.includes(e))].slice(0, 3);
   const href = `#/film/${f.slug}`;
   const posterRef = useRef<HTMLImageElement>(null);
@@ -136,6 +136,7 @@ export function FilmCard({ match: m, now, span, budget, dim }: { match: Match; n
         </div>
 
         <div className="fcard__acts">
+          <RemindButton film={f} />
           <TicketButton film={f} />
           <ShelfButton film={f} />
           <NotThisButton film={f} />

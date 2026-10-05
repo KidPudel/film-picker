@@ -61,7 +61,7 @@
 }
 @media (hover: hover) and (pointer: fine) {
   .shelf-item:hover {
-    background: rgb(219 227 240 / 0.04);
+    background: var(--line);
   }
 }
 .shelf-item__link {

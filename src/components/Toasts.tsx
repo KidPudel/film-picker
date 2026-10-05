@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useUI, type Toast } from '../store/useUI';
 import './Toasts.css';
 
@@ -9,14 +10,16 @@ import './Toasts.css';
  */
 export function Toasts() {
   const toasts = useUI((s) => s.toasts);
-  return (
+  // Portalled outside #root: undo stays reachable while a dialog makes the page inert.
+  return createPortal(
     <div className="toasts" aria-live="polite" aria-relevant="additions">
       <AnimatePresence initial={false}>
         {toasts.map((t) => (
           <ToastItem key={t.id} t={t} />
         ))}
       </AnimatePresence>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

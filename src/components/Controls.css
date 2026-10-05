@@ -1,8 +1,9 @@
-/* ─── Segmented control (radiogroup): options on a hairline rail, the chosen one in white ─── */
+/* ─── Segmented control (radiogroup): the chosen option is filled ─── */
 .seg {
   display: grid;
   gap: var(--s2);
   justify-items: start;
+  max-width: 100%;
 }
 .seg__label {
   color: var(--text-2);
@@ -10,44 +11,32 @@
   font-weight: 550;
 }
 .seg__track {
-  position: relative;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: 100%;
+  padding: 2px;
+  border-radius: var(--r-md);
+  box-shadow: inset 0 0 0 1px var(--line-2);
 }
-.seg__track::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--line-2);
-}
-/* The marker slides under the chosen option (interruptible transition). */
 .seg__thumb {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
-  width: calc(100% / var(--n));
-  transform: translateX(calc(100% * var(--i)));
-  background: var(--text-bright);
-  transition: transform 260ms var(--ease-out);
+  display: none;
 }
 .seg__opt {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   padding: 0 0.9rem;
-  color: var(--text-3);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
   font-size: var(--fs-sm);
   font-weight: 550;
   white-space: nowrap;
   transition:
     color var(--t-fast) ease,
+    background-color var(--t-fast) ease,
     transform var(--t-press) var(--ease-out);
 }
 .seg__opt svg {
@@ -58,35 +47,66 @@
   transform: scale(0.97);
 }
 .seg__opt[aria-checked='true'] {
-  color: var(--text-bright);
+  background: var(--text-bright);
+  color: var(--bg);
+  font-weight: 650;
 }
 @media (hover: hover) and (pointer: fine) {
   .seg__opt:hover:not([aria-checked='true']) {
-    color: var(--text);
+    color: var(--text-bright);
+    background: var(--line);
   }
 }
 .seg--sm .seg__opt {
-  min-height: 2.5rem;
+  min-height: 2.25rem;
   padding: 0 0.75rem;
 }
 @media (pointer: coarse) {
+  .seg__opt,
   .seg--sm .seg__opt {
     min-height: 2.75rem;
   }
 }
 
-/* The spoiler dimmer: the more you let in, the more of the rail fills. */
-.seg--dimmer .seg__track::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 2px;
+/* ─── Settings row: the whole row is a switch ─── */
+.swrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
   width: 100%;
-  transform-origin: left center;
-  transform: scaleX(calc(var(--i) / var(--n)));
-  background: var(--line-3);
-  transition: transform 260ms var(--ease-out);
+  min-height: 3.5rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.swrow__text {
+  display: grid;
+  gap: 0.1rem;
+}
+.swrow__label {
+  color: var(--text);
+  font-weight: 550;
+}
+.swrow__hint {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+.swrow .switch__track {
+  flex: none;
+}
+.swrow[aria-checked='true'] .switch__track {
+  background: var(--text-bright);
+  box-shadow: inset 0 0 0 1px var(--text-bright);
+}
+.swrow[aria-checked='true'] .switch__dot {
+  transform: translateX(1rem);
+  background: var(--bg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .swrow:hover .swrow__label {
+    color: var(--text-bright);
+  }
 }
 
 /* ─── Switch ─── */

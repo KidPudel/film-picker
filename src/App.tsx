@@ -22,7 +22,7 @@ function usePrefsOnRoot() {
     el.dataset.contrast = prefs.contrast;
     if (prefs.motion === 'reduce') el.dataset.motion = 'reduce';
     else delete el.dataset.motion;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', prefs.theme === 'light' ? '#eef1f6' : '#0b1120');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', prefs.theme === 'light' ? '#f4f4f2' : '#09090b');
   }, [prefs]);
   return prefs;
 }

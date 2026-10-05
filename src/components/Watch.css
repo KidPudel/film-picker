@@ -14,19 +14,19 @@
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  color: #f3f8ff;
+  color: #fafafa;
 }
 .leader__ring {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 2px rgb(243 248 255 / 0.55), 0 0 0 10px rgb(243 248 255 / 0.06);
+  box-shadow: inset 0 0 0 2px rgb(250 250 250 / 0.55), 0 0 0 10px rgb(250 250 250 / 0.06);
   overflow: hidden;
 }
 .leader__sweep {
   position: absolute;
   inset: -50%;
-  background: conic-gradient(from 0deg, rgb(243 248 255 / 0.2), rgb(243 248 255 / 0.02) 70%, transparent 71%);
+  background: conic-gradient(from 0deg, rgb(250 250 250 / 0.2), rgb(250 250 250 / 0.02) 70%, transparent 71%);
   animation: leader-sweep 900ms linear infinite;
 }
 @keyframes leader-sweep {
@@ -38,8 +38,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgb(243 248 255 / 0.35), rgb(243 248 255 / 0.35)) center / 1px 100% no-repeat,
-    linear-gradient(rgb(243 248 255 / 0.35), rgb(243 248 255 / 0.35)) center / 100% 1px no-repeat;
+    linear-gradient(rgb(250 250 250 / 0.35), rgb(250 250 250 / 0.35)) center / 1px 100% no-repeat,
+    linear-gradient(rgb(250 250 250 / 0.35), rgb(250 250 250 / 0.35)) center / 100% 1px no-repeat;
 }
 .leader__num {
   position: relative;
@@ -51,7 +51,7 @@
 .leader__skip {
   position: absolute;
   bottom: -3.5rem;
-  color: #aeb9d0;
+  color: #a8a8ae;
 }
 .watch__done {
   display: grid;
@@ -59,7 +59,7 @@
   gap: var(--s5);
   align-items: start;
   max-width: 40rem;
-  color: #dbe3f0;
+  color: #ececee;
 }
 .watch__poster {
   width: 9rem;
@@ -75,11 +75,11 @@
 .watch__title {
   font-size: var(--fs-2xl);
   font-weight: 650;
-  color: #f3f8ff;
+  color: #fafafa;
   line-height: 1.05;
 }
 .watch__lead {
-  color: #aeb9d0;
+  color: #a8a8ae;
 }
 .watch__acts {
   display: flex;
@@ -87,16 +87,16 @@
   gap: var(--s2);
 }
 .watch__hint {
-  color: #8492b0;
+  color: #7f7f86;
   font-size: var(--fs-sm);
 }
 .watch-dlg .btn--ghost {
-  color: #dbe3f0;
-  border-color: rgb(219 227 240 / 0.2);
+  color: #ececee;
+  border-color: rgb(236 236 238 / 0.2);
 }
 .watch-dlg .btn--primary {
-  background: #f3f8ff;
-  color: #0b1120;
+  background: #fafafa;
+  color: #09090b;
 }
 @media (max-width: 560px) {
   .watch__done {

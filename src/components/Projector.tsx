@@ -12,6 +12,9 @@ import './Projector.css';
  * view, so light wraps in from the top and the sides and converges ahead:
  * on the film page it lands exactly on the screen element.
  *
+ * The light is never still: the projected picture plays (shafts swell, fade and
+ * slide), the lamp breathes and flickers a few percent, the smoke rolls upward.
+ *
  * Decorative (aria-hidden). Low resolution + soft haze, ~30 fps when idle,
  * paused in hidden tabs, frozen under reduced motion, off in the light theme,
  * static CSS fallback without WebGL.
@@ -35,12 +38,31 @@ uniform float uZs;
 uniform float uWarp;
 uniform float uMix;
 uniform float uIntensity;
+uniform float uLife;
 uniform sampler2D uImgA;
 uniform sampler2D uImgB;
 uniform sampler2D uNoise;
 
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
-vec3 frame(vec2 uv) { uv = clamp(uv, 0.0, 1.0); return mix(texture2D(uImgA, uv).rgb, texture2D(uImgB, uv).rgb, uMix); }
+vec3 frame(vec2 uv) {
+  uv = clamp(uv, 0.0, 1.0);
+  vec3 b = texture2D(uImgB, uv).rgb;
+  if (uMix >= 1.0) return b;
+  return mix(texture2D(uImgA, uv).rgb, b, uMix);
+}
+// The film is running. A still frame would cast still shafts, so the picture lives:
+// it weaves a little in the gate, drifts like a slow camera move, and its light
+// swells and fades in broad patches as the scene changes.
+vec3 reel(vec2 uv) {
+  float t = uTime;
+  vec2 weave = vec2(sin(t * 5.3) * 0.6 + sin(t * 11.9) * 0.4, sin(t * 4.1 + 1.7)) * 0.0011;
+  vec2 pan = vec2(sin(t * 0.083) * 0.022 + sin(t * 0.031 + 2.0) * 0.016, sin(t * 0.059 + 0.5) * 0.012);
+  vec2 q = uv + (weave + pan) * uLife;
+  float a = texture2D(uNoise, q * vec2(0.8, 0.42) + vec2(t * 0.027, -t * 0.011)).r;
+  float b = texture2D(uNoise, q * vec2(1.6, 0.6) + vec2(0.43 - t * 0.038, 0.71 + t * 0.017)).g;
+  float life = 0.3 + 1.45 * smoothstep(0.22, 0.82, a * 0.6 + b * 0.4);
+  return frame(q) * mix(1.0, life, uLife);
+}
 // Where a point in the hall sits inside the projected frame (0..1), seen from the lens.
 vec2 beamUV(vec3 P) {
   vec3 L = P - uS;
@@ -60,6 +82,7 @@ uniform vec3 uMean;
 uniform float uGlow;
 uniform vec4 uSeats; // x: band bottom, y: band height (canvas px, from the bottom), z: on
 uniform float uAmbient; // how much the hall itself takes on the frame (film vs. house light)
+uniform float uEdge;    // once you're down at the wall: the film's light seeps in from the edges of your view
 const int N = ${steps};
 
 // ── The row of velvet seats in front of you ──────────────────────────────
@@ -107,7 +130,7 @@ vec3 seatRow(vec3 c, vec2 p, float top, float w, float gap, float shift, float l
   vec3 lightCol = mix(uMean, vec3(1.0), 0.3) * (0.4 + 0.6 * uIntensity);
   // The sheen reflects the projected frame: each seat shimmers in the film's colours.
   vec3 rf = reflect(vec3(0.0, 0.0, -1.0), n);
-  vec3 refl = frame(vec2(fract(0.5 + rf.x * 0.7 + cell * 0.173), 0.55 + rf.y * 0.45));
+  vec3 refl = reel(vec2(fract(0.5 + rf.x * 0.7 + cell * 0.173), 0.55 + rf.y * 0.45));
   float nap = 0.82 + 0.36 * texture2D(uNoise, p * vec2(0.045, 0.012) + cell * 0.31).b;
   vec3 velvet = vec3(0.34, 0.035, 0.07);
   vec3 col = velvet * (0.07 + 0.95 * diff * fromAbove) * nap;
@@ -127,9 +150,8 @@ void main() {
   float tNear = 0.22 / d.z;
   float tFar = max(uZs - camZ, 1.0) / d.z;
   float ratio = tFar / tNear;
-  // Interleaved gradient noise: an even, fine dither that hides the step count.
-  vec2 fc = gl_FragCoord.xy + fract(uTime * 7.31) * 97.0;
-  float jitter = fract(52.9829189 * fract(dot(fc, vec2(0.06711056, 0.00583715))));
+  // White-noise jitter, new every frame: reads as film grain rather than a woven pattern.
+  float jitter = hash(gl_FragCoord.xy * 1.37 + fract(uTime * 7.31) * 113.0);
 
   vec3 acc = vec3(0.0);
   float tPrev = tNear;
@@ -142,24 +164,32 @@ void main() {
     float inside = insideBeam(uv, 0.03);
     if (inside <= 0.0) continue;
 
-    // Haze: two drifting layers of smoke, sliced through a tiling noise field.
-    vec2 p1 = P.xy * 0.31 + vec2(P.z * 0.083, -P.z * 0.047) + vec2(uTime * 0.0105, uTime * 0.0165);
-    vec2 p2 = P.xy * 0.92 + vec2(-P.z * 0.161, P.z * 0.107) + vec2(-uTime * 0.0235, uTime * 0.0125);
-    float n = texture2D(uNoise, p1).r * 0.6 + texture2D(uNoise, p2).g * 0.4;
+    // Haze: smoke rising through the warm beam. The fine layer is pushed around by
+    // the broad one, so the smoke rolls and billows instead of sliding like wallpaper.
+    vec2 p1 = P.xy * 0.31 + vec2(P.z * 0.083, -P.z * 0.047) + vec2(uTime * 0.021, -uTime * 0.034);
+    float n1 = texture2D(uNoise, p1).r;
+    vec2 p2 = P.xy * 0.92 + vec2(-P.z * 0.161, P.z * 0.107) + vec2(-uTime * 0.043, -uTime * 0.055) + (n1 - 0.5) * 0.32;
+    float n = n1 * 0.6 + texture2D(uNoise, p2).g * 0.4;
     float dens = 0.42 + 1.15 * smoothstep(0.3, 0.9, n);
 
-    // Fine streaks are constant along each ray — the lens grain of the projected image.
-    float grain = texture2D(uNoise, uv * vec2(2.7, 0.16) + vec2(0.37, 0.11)).b;
-    vec3 img = pow(frame(uv), vec3(1.3)) * (0.22 + 2.2 * grain * grain * grain);
+    // Fine streaks are constant along each ray. Half belong to the lens and stay put,
+    // half to the moving picture: those flare, fade and slide as the film runs.
+    float gLens = texture2D(uNoise, uv * vec2(2.7, 0.16) + vec2(0.37, 0.11)).b;
+    float gFilm = texture2D(uNoise, uv * vec2(3.4, 0.12) + vec2(0.61 + uTime * 0.005, 0.29 + uTime * 0.024)).b;
+    float grain = clamp((mix(gLens, gFilm, 0.5 * uLife) - 0.5) * (1.0 + 0.4 * uLife) + 0.5, 0.0, 1.0);
+    vec3 img = pow(reel(uv), vec3(1.3)) * (0.22 + 2.2 * grain * grain * grain);
 
     vec3 L = P - uS;
     float r2 = dot(L, L);
     float irr = 1.0 / (0.55 + r2);
 
     // Warp: dashes of light rushing along the rays.
-    float s = log(r2) * 1.7 - uTime * 7.5;
-    float dash = texture2D(uNoise, vec2(uv.x * 4.7 + uv.y * 2.1, s * 0.19)).b;
-    float boost = 1.0 + uWarp * (smoothstep(0.5, 0.92, dash) * 9.0 + 0.8);
+    float boost = 1.0;
+    if (uWarp > 0.001) {
+      float s = log(r2) * 1.7 - uTime * 7.5;
+      float dash = texture2D(uNoise, vec2(uv.x * 4.7 + uv.y * 2.1, s * 0.19)).b;
+      boost += uWarp * (smoothstep(0.5, 0.92, dash) * 9.0 + 0.8);
+    }
 
     acc += img * (irr * dens * inside * dt * boost);
   }
@@ -192,21 +222,30 @@ void main() {
   float vig = smoothstep(1.6, 0.25, length(vec2(ndc.x * 0.8, (ndc.y + 0.45) * 0.85)));
   vec3 c = hall * mix(0.45, 1.0, vig) + beam * mix(0.7, 1.0, vig);
   // The walls catch the film: a huge, soft spill of the frame that is showing.
-  vec3 amb = frame(vec2(ndc.x * 0.5 + 0.5, ndc.y * 0.32 + 0.6));
+  vec3 amb = reel(vec2(ndc.x * 0.5 + 0.5, ndc.y * 0.32 + 0.6));
   float ambW = smoothstep(1.5, 0.0, length(vec2(ndc.x * 0.75, (ndc.y - 0.3) * 1.15)));
   c += amb * amb * ambW * 0.11 * uAmbient * uIntensity;
+  // Peripheral spill: strongest at the sides, gone well before the reading column.
+  float side = smoothstep(0.62, 1.0, abs(ndc.x));
+  float low = smoothstep(-1.0, 0.2, -ndc.y) * 0.35;
+  vec3 spill = mix(uMean, frame(vec2(ndc.x * 0.5 + 0.5, 0.5)), 0.5);
+  c += spill * (side * side + low * side) * 0.16 * uEdge;
 
   if (uSeats.z > 0.5) {
     vec2 p = gl_FragCoord.xy;
     float bb = uSeats.x;
     float bh = uSeats.y;
     float cx = uRes.x * 0.5;
-    float wf = bh * 0.92;
-    c = seatRow(c, p, bb + bh * 0.98, wf, bh * 0.05, cx + (wf + bh * 0.05) * 0.5, 0.5);
-    float wn = bh * 1.42;
-    c = seatRow(c, p, bb + bh * 0.72, wn, bh * 0.06, cx, 1.0);
-    // The seats sink into the dark below them.
-    c = mix(c, hall * 0.45, smoothstep(bb + bh * 0.42, bb - bh * 0.02, p.y) * step(p.y, bb + bh));
+    // Seats live inside their band only (their backs are open at the bottom).
+    if (p.y > bb - bh * 0.12) {
+      float wf = bh * 0.92;
+      c = seatRow(c, p, bb + bh * 0.98, wf, bh * 0.05, cx + (wf + bh * 0.05) * 0.5, 0.5);
+      float wn = bh * 1.42;
+      c = seatRow(c, p, bb + bh * 0.72, wn, bh * 0.06, cx, 1.0);
+    }
+    // The seats sink into the dark just below them (a short fade, not the whole floor).
+    float under = smoothstep(bb + bh * 0.42, bb - bh * 0.02, p.y) * smoothstep(bb - bh * 0.7, bb - bh * 0.15, p.y);
+    c = mix(c, hall * 0.45, under * step(p.y, bb + bh));
   }
 
   c += (hash(gl_FragCoord.xy + fract(uTime * 0.71) * 113.0) - 0.5) / 255.0;
@@ -232,10 +271,11 @@ varying float vTw;
 void main() {
   float s = aP.w;
   vec3 P = aP.xyz;
-  P.x += sin(uTime * 0.07 + s * 20.0) * 0.22;
-  P.y += sin(uTime * 0.05 + s * 13.0) * 0.16 - uTime * 0.006 * (0.4 + fract(s * 7.0));
+  // Motes ride the air stirred by the warm beam: slow swirls with a small, quicker eddy.
+  P.x += sin(uTime * 0.11 + s * 20.0) * 0.24 + sin(uTime * 0.31 + s * 9.0) * 0.04;
+  P.y += sin(uTime * 0.08 + s * 13.0) * 0.17 - uTime * 0.006 * (0.4 + fract(s * 7.0));
   P.y = mod(P.y + 1.6, 4.4) - 1.6;
-  P.z += cos(uTime * 0.06 + s * 31.0) * 0.25;
+  P.z += cos(uTime * 0.09 + s * 31.0) * 0.27;
   float camZ = uWarp * 0.8;
   float z = P.z - camZ;
   float focal = uFocal * (1.0 + uWarp * 0.16);
@@ -258,7 +298,8 @@ void main() {
   float r = length(gl_PointCoord - 0.5) * 2.0;
   float disc = smoothstep(1.0, 0.55, r) * 0.55 + smoothstep(1.0, 0.85, r) * smoothstep(0.7, 0.95, r) * 0.35;
   float a = disc * insideBeam(vUV, 0.05) * vNear * vTw;
-  gl_FragColor = vec4(mix(frame(vUV), vec3(1.0), 0.35) * a * uIntensity * 3.2, 1.0);
+  // A mote glints when a bright shaft of the moving picture crosses it.
+  gl_FragColor = vec4(mix(reel(vUV), vec3(1.0), 0.35) * a * uIntensity * 3.2, 1.0);
 }
 `;
 
@@ -341,6 +382,12 @@ function makeHouseFrame(): HTMLCanvasElement {
   g.fillRect(0, 0, 512, 64);
   return c;
 }
+
+/** 0..1, stable per integer (one value per film frame). */
+const frameNoise = (n: number) => {
+  const x = Math.sin(n * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+};
 
 const hexRgb = (h: string): [number, number, number] => [parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255];
 
@@ -432,7 +479,7 @@ export function Projector() {
     }
 
     const uniforms = (p: WebGLProgram) => {
-      const names = ['uRes', 'uTime', 'uAspect', 'uFocal', 'uS', 'uRectMin', 'uRectMax', 'uZs', 'uWarp', 'uMix', 'uIntensity', 'uImgA', 'uImgB', 'uNoise', 'uFilm', 'uMean', 'uGlow', 'uSeats', 'uAmbient'];
+      const names = ['uRes', 'uTime', 'uAspect', 'uFocal', 'uS', 'uRectMin', 'uRectMax', 'uZs', 'uWarp', 'uMix', 'uIntensity', 'uImgA', 'uImgB', 'uNoise', 'uFilm', 'uMean', 'uGlow', 'uSeats', 'uAmbient', 'uEdge', 'uLife'];
       return Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(p, n)])) as Record<string, WebGLUniformLocation | null>;
     };
     const UB = uniforms(beamProg);
@@ -490,7 +537,7 @@ export function Projector() {
     // Eased scene state.
     const cur = {
       s: [...CATALOG.s], zs: CATALOG.zs, min: [...CATALOG.min], max: [...CATALOG.max],
-      film: 0, intensity: 0, ambient: 0.3, mean: lift(hexRgb(HOUSE.mean)),
+      film: 0, intensity: 0, ambient: 0.3, edge: 0, mean: lift(hexRgb(HOUSE.mean)),
     };
     let lastBeamVar = '';
     let lastVarAt = 0;
@@ -528,7 +575,7 @@ export function Projector() {
       const warp = rm || warpE < 0 || warpE > 1.5 ? 0 : warpE < 0.18 ? warpE / 0.18 : Math.exp(-(warpE - 0.18) * 3.1);
       const fading = mix < 1;
       const busy = warp > 0.001 || fading || now < activeUntil;
-      // Idle haze drifts slowly — half the frame rate is plenty and saves battery.
+      // Idle, the hall moves slowly — half the frame rate (film is 24 fps anyway) saves battery.
       odd = !odd;
       if (!force && !busy && odd && !rm) return;
       if (!force && rm && !busy && lastDrawn) return;
@@ -541,7 +588,9 @@ export function Projector() {
       const aspect = window.innerWidth / window.innerHeight;
       let tgt = CATALOG;
       let filmOn = 0;
-      let intensity = 1 - Math.min(1, scroll / (window.innerHeight * 0.85)) * 0.5;
+      const down = Math.min(1, scroll / (window.innerHeight * 0.85));
+      let intensity = 1 - down * 0.72;
+      const edgeT = st.mode === 'catalog' ? down * (st.preview ? 1 : 0.55) : 0;
       const el = st.mode === 'film' ? st.screen : null;
       if (el) {
         const b = el.getBoundingClientRect();
@@ -564,6 +613,7 @@ export function Projector() {
       }
       cur.film += (filmOn - cur.film) * k;
       cur.ambient += ((target.image ? 1 : 0.3) - cur.ambient) * (rm ? 1 : 1 - Math.exp(-dt * 2));
+      cur.edge += (edgeT - cur.edge) * (rm ? 1 : 1 - Math.exp(-dt * 3));
       cur.intensity += (intensity - cur.intensity) * (rm ? 1 : 1 - Math.exp(-dt * 2.2));
       const meanT = lift(hexRgb(target.mean));
       for (let i = 0; i < 3; i++) cur.mean[i] += (meanT[i] - cur.mean[i]) * (rm ? 1 : 1 - Math.exp(-dt * 3));
@@ -579,6 +629,11 @@ export function Projector() {
       }
 
       const time = rm ? 40 : (now - t0) / 1000;
+      // Lamp and shutter: the light is never quite steady. A slow breath of the lamp plus a
+      // tiny exposure difference from one film frame to the next — a few percent, never a strobe.
+      const flick = rm ? 1 : 1 + 0.035 * Math.sin(time * 0.93) * Math.sin(time * 2.27 + 1.3) + 0.036 * (frameNoise(Math.floor(time * 24)) - 0.5);
+      // On the film page the screen shows a still, so the picture in the beam plays calmer.
+      const life = 1 - 0.3 * cur.film;
       const set = (U: Record<string, WebGLUniformLocation | null>) => {
         gl.uniform2f(U.uRes, w, h);
         gl.uniform1f(U.uTime, time);
@@ -590,7 +645,8 @@ export function Projector() {
         gl.uniform1f(U.uZs, cur.zs);
         gl.uniform1f(U.uWarp, warp);
         gl.uniform1f(U.uMix, mix);
-        gl.uniform1f(U.uIntensity, cur.intensity);
+        gl.uniform1f(U.uIntensity, cur.intensity * flick);
+        gl.uniform1f(U.uLife, life);
         gl.uniform1i(U.uImgA, 0);
         gl.uniform1i(U.uImgB, 1);
         gl.uniform1i(U.uNoise, 2);
@@ -608,6 +664,7 @@ export function Projector() {
       gl.uniform1f(UB.uFilm, cur.film);
       gl.uniform1f(UB.uGlow, 1 - cur.film);
       gl.uniform1f(UB.uAmbient, cur.ambient);
+      gl.uniform1f(UB.uEdge, cur.edge);
       // The seats band follows its DOM element (it scrolls with the page).
       const se = st.seats;
       const sr = se?.getBoundingClientRect();

@@ -9,6 +9,8 @@
 
 /* ─── The sentence ─── */
 .tuner__sentence {
+  position: relative;
+  isolation: isolate;
   font-family: var(--font-display);
   font-size: var(--fs-display);
   font-weight: 600;
@@ -18,27 +20,42 @@
   text-wrap: balance;
   text-shadow: 0 2px 40px rgb(0 0 0 / 0.75);
 }
+/* The light stays around the words, not behind them: a calm pool of dark under the sentence. */
+.tuner__sentence::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -18% -14%;
+  background: radial-gradient(closest-side, rgb(9 9 11 / 0.82), rgb(9 9 11 / 0.6) 55%, transparent);
+  pointer-events: none;
+}
 :root[data-theme='light'] .tuner__sentence {
   text-shadow: none;
+}
+:root[data-theme='light'] .tuner__sentence::before {
+  display: none;
 }
 /* A blank you can fill: grey and hairlined when empty, white and underlined when chosen. */
 .slot {
   display: inline;
   font: inherit;
+  font-weight: 450;
   letter-spacing: inherit;
-  color: var(--text-3);
+  color: var(--text-2);
   padding: 0;
   border-radius: var(--r-xs);
-  text-decoration: underline;
-  text-decoration-thickness: 0.04em;
-  text-underline-offset: 0.16em;
-  text-decoration-color: var(--line-3);
+  text-decoration: underline dotted;
+  text-decoration-thickness: 0.07em;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--text-3);
   transition:
     color var(--t-fast) ease,
     text-decoration-color var(--t-fast) ease;
 }
 .slot.is-set {
+  font-weight: 600;
   color: var(--text-bright);
+  text-decoration-style: solid;
   text-decoration-color: var(--text-bright);
   text-decoration-thickness: 0.05em;
 }

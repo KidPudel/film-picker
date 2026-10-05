@@ -5,6 +5,7 @@ import { Roulette } from './Roulette';
 import { Watch, Paywall } from './Watch';
 import { Shelves } from './Shelves';
 import { Jam } from './Jam';
+import { Settings } from './SettingsPanel';
 
 /**
  * Single switch for every global overlay (one at a time keeps focus management simple).
@@ -26,6 +27,7 @@ export function Overlays() {
       <Paywall open={o?.type === 'paywall'} filmId={l.paywall} />
       <Shelves open={o?.type === 'shelves'} />
       <Jam open={o?.type === 'jam'} />
+      <Settings open={o?.type === 'settings'} />
     </>
   );
 }

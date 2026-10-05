@@ -1,4 +1,4 @@
-import { useRef, type KeyboardEvent, type ReactNode } from 'react';
+import { useId, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import './Controls.css';
 
 /**
@@ -89,5 +89,35 @@ export function Meter({ value, max = 5, label, text, accent }: { value: number; 
         {text}
       </span>
     </div>
+  );
+}
+
+/** A settings row: the whole row is the switch; the hint describes it. */
+export function SwitchRow({ checked, onChange, label, hint }: { checked: boolean; onChange: (v: boolean) => void; label: string; hint?: string }) {
+  const id = useId();
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-labelledby={`${id}-l`}
+      aria-describedby={hint ? `${id}-h` : undefined}
+      className="swrow"
+      onClick={() => onChange(!checked)}
+    >
+      <span className="swrow__text">
+        <span id={`${id}-l`} className="swrow__label">
+          {label}
+        </span>
+        {hint && (
+          <span id={`${id}-h`} className="swrow__hint">
+            {hint}
+          </span>
+        )}
+      </span>
+      <span className="switch__track" aria-hidden="true">
+        <span className="switch__dot" />
+      </span>
+    </button>
   );
 }

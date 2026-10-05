@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Library, SlidersHorizontal, Users } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { useUI } from '../store/useUI';
 import { navigate, useRoute } from '../lib/router';
-import { Popover } from './Overlay';
-import { SettingsPanel } from './SettingsPanel';
 import './Header.css';
 
 export function Header() {
@@ -13,8 +11,6 @@ export function Header() {
   const jam = useStore((s) => s.jam);
   const open = useUI((s) => s.open);
   const saved = shelves.reduce((n, s) => n + s.items.length, 0);
-  const settingsBtn = useRef<HTMLButtonElement>(null);
-  const [settings, setSettings] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -60,22 +56,12 @@ export function Header() {
               </span>
             )}
           </button>
-          <button
-            ref={settingsBtn}
-            type="button"
-            className="hdr__link"
-            aria-expanded={settings}
-            aria-haspopup="dialog"
-            onClick={() => setSettings((v) => !v)}
-          >
+          <button type="button" className="hdr__link" aria-haspopup="dialog" onClick={() => open({ type: 'settings' })}>
             <SlidersHorizontal aria-hidden="true" />
             <span className="hdr__label">Настройки</span>
           </button>
         </nav>
       </div>
-      <Popover open={settings} onClose={() => setSettings(false)} anchorRef={settingsBtn} label="Настройки показа" width={460}>
-        <SettingsPanel />
-      </Popover>
     </header>
   );
 }

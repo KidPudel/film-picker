@@ -125,7 +125,7 @@ export function Catalog() {
           {almost.length > 0 && (
             <section className="almost" aria-labelledby="almost-title">
               <h2 id="almost-title" className="almost__title">
-                {active ? 'Почти подходит' : 'Пока не посмотреть'}
+                {active ? 'Почти подходит' : 'Пока недоступно'}
                 <span className="afisha__count afisha__count--quiet">{almost.length}</span>
               </h2>
               <p className="almost__lead">
@@ -133,7 +133,7 @@ export function Catalog() {
                   ? 'Ничего не прячем молча: у каждого фильма написано, чем он не совпал с вашим вечером.'
                   : 'Эти фильмы скоро появятся или вы просили показывать их реже.'}
               </p>
-              <Schedule matches={almost} now={now} dim label={active ? 'Почти подходит' : 'Пока не посмотреть'} />
+              <Schedule matches={almost} now={now} dim label={active ? 'Почти подходит' : 'Пока недоступно'} />
             </section>
           )}
         </LayoutGroup>

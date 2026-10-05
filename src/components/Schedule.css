@@ -148,12 +148,12 @@
   top: 0;
   bottom: 0;
 }
-/* The film's own colour: the only colour on the card besides its poster. */
+/* Neutral on the wall: the posters carry the colour. */
 .session__fill {
   left: 0;
   width: 100%;
   transform-origin: left center;
-  background: var(--accent);
+  background: var(--text-2);
   transition: transform 420ms var(--ease-out);
 }
 .session__over {

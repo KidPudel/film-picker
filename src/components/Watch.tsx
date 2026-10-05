@@ -106,7 +106,7 @@ export function Paywall({ open, filmId }: { open: boolean; filmId: number }) {
           type="button"
           className="btn btn--primary btn--lg"
           onClick={() => {
-            toast('В прототипе оплата не подключена — это демо сценария');
+            toast('Это демо: оплата в прототипе не подключена.');
             close();
           }}
         >

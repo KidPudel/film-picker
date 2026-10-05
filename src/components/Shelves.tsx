@@ -183,7 +183,7 @@ function ShelfBlock({ shelf }: { shelf: Shelf }) {
                     aria-label={`Убрать «${f.title}» с полки`}
                     onClick={() => {
                       removeFromShelf(f.id, shelf.id);
-                      toast(`«${f.title}» убран с полки`, { label: 'Вернуть', run: () => useStore.getState().saveToShelf(f.id, shelf.id, it.reason) });
+                      toast(`Убрали «${f.title}» с полки`, { label: 'Вернуть', run: () => useStore.getState().saveToShelf(f.id, shelf.id, it.reason) });
                     }}
                   >
                     <X aria-hidden="true" />

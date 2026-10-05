@@ -1,18 +1,24 @@
-# Handoff — visual rebuild (start here in a new session)
+# Handoff — state of the prototype
 
-**Status (2026-10-05):** product/UX layer is done and works (see `docs/product.md`). The visual skin was rejected by the user as "AI slop" and is mid-rebuild. Do the rebuild **with the skills loaded**: `frontend-design` (plugin `frontend-design@claude-plugins-official`), `impeccable` (plugin `impeccable@impeccable`, run its `scripts/impeccable context` setup first), and `emil-design-eng`. Both plugins are installed and enabled at user scope. Anthropic's **Design** plugin is also enabled on the account — use its skills at the matching steps: `design-critique` on the rebuilt pages, `accessibility-review` as the a11y audit, `ux-copy` to review the Russian copy, `design-system` to document tokens/components, `design-handoff` for the final spec.
+**Status (2026-10-05):** product/UX layer done (see `docs/product.md`); visual layer rebuilt with the design skills (impeccable, frontend-design, emil-design-eng, Anthropic Design plugin). The visual system is documented in `DESIGN.md`; impeccable's direction contract is in `.impeccable/surfaces/src-app-tsx.md`.
 
-## What the user asked for (verbatim intent)
-- Not the skin they got: no serif, no warm brown/brass, no flat CSS cones. **Clean, big, sans.**
-- **Immersive, realistic projector rays** that "warp us" — references: a booth window with a bright point source, volumetric cyan/teal/white streaks fanning through haze, red velvet seats in the foreground catching the light.
-- Free to rebuild visuals **and interaction** completely. Keep the experience features.
+## What the user asked for (and confirmed along the way)
+- A dark cinema hall you sit in: the projector is behind your head, its beam pours past you through haze and "warps, wraps, hugs". Velvet seats in front of you.
+- Catalog: no screen; the hall's light takes the colours of the film you point at (on touch screens — the one in the middle of the screen). With an evening set, the best match colours the hall.
+- Poster cards, not a list. Clean, big, **rounded** sans → Onest (picked from a specimen).
+- No generic AI palette: a minimal, strong neutral base; **the film gives the colour** (posters, the film's `ed.accent` on its session bar and page action, frames in the light).
+- Content first, blended into the UI (the Kinopoisk philosophy): the film page opens on the film's still, dissolving into the hall.
+- More images than posters: spoiler-safe stills from TMDB (provenance in `movies-data/stills.json` and embedded in every raster).
+- No invented brand: plain title «Кино на вечер»; storage key `kino-na-vecher:v1`.
 
-## Technical pieces already built (reuse only if the new direction wants them)
-- `src/components/Projector.tsx` + `src/store/useProjector.ts` — **WebGL volumetric beam** (fixed canvas behind the app): lens glare + booth window, colour bands from a 16-colour palette, fbm smoke, dust motes, `warp()` outward streaks, scroll dimming, reduced-motion freeze, light-theme hide, no-WebGL fallback. **Not yet mounted** in `App.tsx` and not yet tuned visually.
-- Per-film beam palettes: `npm run posters` writes `palette` (poster columns lifted to light) into `src/data/posters.generated.json`. Not yet exposed on `Film` (add `poster.palette`).
-- `src/components/Seats.tsx` — red velvet seat rows lit from `lightX`. Not yet used.
-- `src/styles/tokens.css`, `src/styles/base.css` and every component `.css` are **not authoritative** — they were reworked without the design skills. Replace freely (fonts, palette, layout, components, interaction).
-- `src/components/ReasonIcon.tsx` — drawn icons for reason lines (status never by colour alone).
+## Verification
+- `npm run typecheck && npm run build`
+- axe: 0 violations in both themes across catalog, tray + toasts, compare, settings, jam, shelves, film page, «Не то», paywall, watch.
+- Keyboard: popovers and dialogs trap/return focus; ←/→ step films on the film page.
+- Reflow: no horizontal scroll at 320 px or 200% zoom.
+- Headless captures for review: `.impeccable/review/` (git-ignored).
 
-## Constraints that must survive
-Russian UI, gender-neutral copy, every action reversible with toast undo, AA contrast (axe = 0 violations in both themes), keyboard + screen reader support, reduced motion, GitHub Pages (hash routing, `base: './'`). Mock data stays labelled «демо».
+## Known limits
+- Three films have only 1–3 stills on TMDB (Не хороните меня без Ивана, Война искусств, Книготорговцы); their backdrops rotate fewer frames.
+- `npm run media` regenerates WebP files without embedded provenance; re-run `impeccable embed-prompt` (see DESIGN.md › Imagery) after regenerating.
+- Availability, prices, audio tracks, friends, the jam partner and the assistant are demo and say so in the UI.

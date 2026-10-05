@@ -6,6 +6,7 @@ export type Overlay =
   | { type: 'compare'; ids?: [number, number] }
   | { type: 'jam' }
   | { type: 'shelves' }
+  | { type: 'settings' }
   | { type: 'roulette'; pool: number[] }
   | { type: 'watch'; filmId: number }
   | { type: 'paywall'; filmId: number }
