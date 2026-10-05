@@ -73,7 +73,7 @@ export function Header() {
           </button>
         </nav>
       </div>
-      <Popover open={settings} onClose={() => setSettings(false)} anchorRef={settingsBtn} label="Настройки показа" width={392}>
+      <Popover open={settings} onClose={() => setSettings(false)} anchorRef={settingsBtn} label="Настройки показа" width={460}>
         <SettingsPanel />
       </Popover>
     </header>

@@ -58,7 +58,7 @@ export function SessionBar({ film, now, span, budget, dim }: { film: Film; now: 
         </span>
       </p>
       <div className="session__track" aria-hidden="true">
-        <span className="session__fill" style={{ width: `${cut}%` }} />
+        <span className="session__fill" style={{ transform: `scaleX(${cut / 100})` }} />
         {over && <span className="session__over" style={{ left: `${cut}%`, width: `${endPct - cut}%` }} />}
         {budget !== null && <span className="session__budget" style={{ left: `${((budget + SETTLE) / span) * 100}%` }} />}
       </div>

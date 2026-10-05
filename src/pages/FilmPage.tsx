@@ -284,7 +284,8 @@ function Decision({ film: f, now }: { film: Film; now: Date }) {
 
       <div className="decide__facts">
         {a.kind !== 'soon' ? (
-          <div className="decide__session" aria-label={`Если начать сейчас, закончится около ${finishTime(f.runtime, now)}`}>
+          <div className="decide__session">
+            <span className="sr-only">Если начать сейчас, фильм закончится около {finishTime(f.runtime, now)}.</span>
             <span className="decide__clock" aria-hidden="true">
               <time>{formatClock(now)}</time>
               <span className="decide__track">

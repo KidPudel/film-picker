@@ -42,6 +42,10 @@ canvas {
   display: block;
   max-width: 100%;
 }
+/* Posters carry width/height attributes for layout stability; their height follows their width. */
+img.poster {
+  height: auto;
+}
 button,
 input,
 select,

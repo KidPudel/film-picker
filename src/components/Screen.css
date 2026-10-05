@@ -98,3 +98,10 @@
 ::view-transition-new(root) {
   animation-duration: 320ms;
 }
+
+:root[data-theme='light'] .backdrop__count {
+  color: var(--text);
+}
+:root[data-theme='light'] .backdrop__credit {
+  color: var(--text-2);
+}

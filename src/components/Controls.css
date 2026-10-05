@@ -82,9 +82,11 @@
   left: 0;
   bottom: 0;
   height: 2px;
-  width: calc(100% * var(--i) / var(--n));
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(calc(var(--i) / var(--n)));
   background: var(--line-3);
-  transition: width 260ms var(--ease-out);
+  transition: transform 260ms var(--ease-out);
 }
 
 /* ─── Switch ─── */
