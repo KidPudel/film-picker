@@ -1,0 +1,135 @@
+.shelves {
+  display: grid;
+  gap: var(--s-5);
+}
+.shelves__empty {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px dashed var(--line-2);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+.shelves__empty p:first-child {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--text);
+}
+.shelves__add {
+  justify-self: start;
+}
+.shelves__new {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+}
+.shelves__new-acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+}
+.shelf {
+  display: grid;
+  gap: var(--s-2);
+}
+.shelf__head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.shelf__name {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+}
+.shelf__count {
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+  font-weight: 400;
+}
+.shelf__head .icon-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.shelf__head .icon-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+.shelf__rename {
+  flex: 1;
+  display: flex;
+  gap: var(--s-2);
+}
+.shelf__rename input {
+  flex: 1;
+}
+.shelf__empty {
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+}
+.shelf__items {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.shelf-item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border-radius: var(--r-lg);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+}
+.shelf-item__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: var(--s-3);
+  text-decoration: none;
+}
+.shelf-item__poster {
+  flex: none;
+  width: 3.5rem;
+  height: 5.25rem;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.shelf-item__body {
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  min-width: 0;
+}
+.shelf-item__title {
+  font-weight: 620;
+}
+.shelf-item__meta {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.shelf-item__reason {
+  justify-self: start;
+  margin-top: 2px;
+  padding: 0.05rem 0.5rem;
+  border-radius: var(--r-pill);
+  background: rgb(var(--lit-rgb) / 0.12);
+  color: var(--text);
+  font-size: var(--fs-xs);
+}
+.shelf-item__fit {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.shelf-item__fit.is-yes {
+  color: var(--ok);
+}
+.shelf-item__acts {
+  display: flex;
+  flex-direction: column;
+}

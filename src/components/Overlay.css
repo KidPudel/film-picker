@@ -1,0 +1,146 @@
+.ov-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+}
+.ov-layer--center {
+  place-items: center;
+  padding: var(--s-5);
+}
+.ov-layer--drawer {
+  justify-items: end;
+}
+.ov-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* Anchored popover — a translucent material that floats over content */
+.ov-pop {
+  position: fixed;
+  z-index: 90;
+  max-height: min(70vh, 34rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: var(--s-3);
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--surface-2) 92%, transparent);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-3), inset 0 1px 0 rgb(var(--beam) / 0.08);
+}
+
+/* Bottom sheet (phones) */
+.ov-sheet {
+  position: absolute;
+  inset: auto 0 0 0;
+  max-height: 88dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-top: 1px solid var(--line-2);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  box-shadow: var(--shadow-3);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.ov-sheet--tall {
+  height: 92dvh;
+  max-height: 92dvh;
+}
+.ov-sheet__grab {
+  flex: none;
+  display: grid;
+  place-items: center;
+  height: 1.75rem;
+  touch-action: none;
+  cursor: grab;
+}
+.ov-sheet__grab span {
+  width: 2.5rem;
+  height: 0.3rem;
+  border-radius: var(--r-pill);
+  background: var(--line-3);
+}
+.ov-sheet__body {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--s-4) var(--s-5);
+}
+
+/* Dialog */
+.ov-dialog {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: min(90dvh, 56rem);
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-3), inset 0 1px 0 rgb(var(--beam) / 0.06);
+  overflow: hidden;
+}
+.ov-dialog--sm { max-width: 28rem; }
+.ov-dialog--md { max-width: 38rem; }
+.ov-dialog--lg { max-width: 56rem; }
+.ov-dialog--xl { max-width: 72rem; }
+.ov-dialog--drawer {
+  height: 100dvh;
+  max-height: 100dvh;
+  max-width: 30rem;
+  border-radius: var(--r-xl) 0 0 var(--r-xl);
+  border-right: 0;
+}
+.ov-dialog__head {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-5) var(--s-5) var(--s-3);
+}
+.ov-dialog__head--bare {
+  position: absolute;
+  inset: 0 0 auto auto;
+  z-index: 2;
+  padding: var(--s-3);
+}
+.ov-sheet .ov-dialog__head {
+  padding: var(--s-1) var(--s-4) var(--s-3);
+}
+.ov-dialog__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.ov-dialog__sub {
+  margin-top: var(--s-1);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+.ov-dialog__close {
+  margin: -0.4rem -0.5rem 0 0;
+  flex: none;
+}
+.ov-dialog__body {
+  flex: 1;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--s-5) var(--s-5);
+}
+.ov-sheet .ov-dialog__body {
+  padding: 0 var(--s-4) var(--s-5);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .ov-pop {
+    background: var(--surface-2);
+    backdrop-filter: none;
+  }
+}

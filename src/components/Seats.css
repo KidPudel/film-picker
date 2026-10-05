@@ -1,0 +1,8 @@
+.seats {
+  display: block;
+  width: 100%;
+  pointer-events: none;
+}
+:root[data-theme='light'] .seats {
+  opacity: 0.18;
+}

@@ -1,0 +1,75 @@
+.reel {
+  display: grid;
+  gap: var(--s-5);
+}
+.reel__viewport {
+  position: relative;
+  height: 11.5rem;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  background:
+    repeating-linear-gradient(90deg, var(--bg-deep) 0 10px, transparent 10px 18px) top / 100% 12px no-repeat,
+    repeating-linear-gradient(90deg, var(--bg-deep) 0 10px, transparent 10px 18px) bottom / 100% 12px no-repeat,
+    #0e0c0a;
+  padding-block: 14px;
+  mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent);
+}
+.reel__strip {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+  will-change: transform;
+}
+.reel__item {
+  flex: none;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.reel__gate {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 128px;
+  translate: -50% 0;
+  border: 2px solid var(--lit);
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgb(var(--lit-rgb) / 0.45), inset 0 0 30px rgb(var(--lit-rgb) / 0.25);
+  pointer-events: none;
+}
+.reel__result {
+  min-height: 12rem;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+.reel__wait {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
+}
+.reel__card {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  max-width: 34rem;
+}
+.reel__title {
+  font-size: var(--fs-3xl);
+  text-shadow: 0 0 40px color-mix(in oklab, var(--accent) 40%, transparent);
+}
+.reel__meta {
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+}
+.reel__fit {
+  color: var(--text-2);
+}
+.reel__acts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}

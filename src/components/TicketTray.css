@@ -1,0 +1,177 @@
+.tray {
+  position: fixed;
+  z-index: 35;
+  left: 50%;
+  bottom: calc(var(--s-4) + env(safe-area-inset-bottom));
+  translate: -50% 0;
+  width: min(60rem, calc(100vw - 2 * var(--gutter)));
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-4);
+  border-radius: var(--r-xl);
+  background: color-mix(in oklab, var(--surface-2) 86%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-3), inset 0 1px 0 rgb(var(--beam) / 0.08);
+}
+body:has(.tray) main {
+  padding-bottom: var(--tray-h, 0px);
+}
+.tray__head {
+  flex: none;
+  display: grid;
+  gap: 0.35rem;
+}
+.tray__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.tray__count {
+  display: flex;
+  gap: 4px;
+}
+.tray__count span {
+  width: 1.1rem;
+  height: 0.35rem;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+}
+.tray__count span.is-on {
+  background: var(--lit);
+}
+.tray__stubs {
+  flex: 1;
+  min-width: 0;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: var(--s-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+/* Paper ticket with a perforated edge */
+.stub {
+  position: relative;
+  flex: 0 1 14rem;
+  min-width: 10rem;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  -webkit-mask: radial-gradient(circle 6px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 6px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 6px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+    radial-gradient(circle 6px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+}
+.stub::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  right: 2.4rem;
+  border-left: 1.5px dashed var(--paper-line);
+}
+.stub__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.35rem 0.5rem 0.35rem 0.9rem;
+  text-decoration: none;
+}
+.stub__img {
+  flex: none;
+  width: 1.9rem;
+  height: 2.85rem;
+  object-fit: cover;
+  border-radius: 2px;
+}
+.stub__text {
+  min-width: 0;
+  display: grid;
+}
+.stub__title {
+  font-weight: 650;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.stub__time {
+  font-size: 0.68rem;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+.stub__x {
+  flex: none;
+  width: 2.4rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  color: var(--paper-ink);
+  opacity: 0.6;
+  transition: opacity var(--t-fast) ease, transform var(--t-press) var(--ease-out);
+}
+.stub__x:active {
+  transform: scale(0.9);
+}
+.stub__x svg {
+  width: 1rem;
+  height: 1rem;
+}
+@media (hover: hover) and (pointer: fine) {
+  .stub__x:hover {
+    opacity: 1;
+  }
+}
+.tray__acts {
+  flex: none;
+  display: flex;
+  gap: var(--s-1);
+}
+@media (max-width: 960px) {
+  .tray__lbl {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .tray__acts .btn {
+    width: 2.5rem;
+    padding: 0;
+  }
+  /* On the film page the sticky action bar owns the bottom edge (it has the ticket button). */
+  .tray--film {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .tray {
+    gap: var(--s-2);
+    padding: var(--s-2);
+  }
+  .tray__head,
+  .stub__text,
+  .stub::before,
+  .tray__acts .btn:last-child {
+    display: none;
+  }
+  .stub {
+    flex: none;
+    min-width: 0;
+  }
+  .stub__link {
+    padding: 0.3rem 0 0.3rem 0.65rem;
+  }
+  .stub__x {
+    width: 2.1rem;
+  }
+}

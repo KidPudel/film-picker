@@ -1,0 +1,212 @@
+/* Card actions: icon buttons (44px targets) or full labelled buttons */
+.act {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--text-3);
+  border-radius: var(--r-pill);
+  transition:
+    transform var(--t-press) var(--ease-out),
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease,
+    border-color var(--t-fast) ease;
+}
+.act svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+.act:active {
+  transform: scale(0.92);
+}
+.act--icon {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+.act--full {
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 1px solid var(--line-2);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 560;
+}
+.act--full:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .act:hover {
+    color: var(--text);
+    background: var(--surface-2);
+  }
+}
+.act[aria-expanded='true'] {
+  color: var(--text);
+  background: var(--surface-2);
+}
+.act--ticket.is-on {
+  color: var(--lit);
+  --ticket-cut: var(--bg);
+}
+.act--ticket.is-on.act--full {
+  background: rgb(var(--lit-rgb) / 0.14);
+  border-color: rgb(var(--lit-rgb) / 0.6);
+  --ticket-cut: var(--surface);
+}
+.act--ticket.is-on .ticket-ico {
+  animation: ticket-stamp 360ms var(--ease-out);
+}
+@keyframes ticket-stamp {
+  0% { transform: scale(0.7) rotate(-12deg); }
+  60% { transform: scale(1.12) rotate(4deg); }
+  100% { transform: none; }
+}
+.act--shelf.is-on {
+  color: var(--lit);
+}
+
+/* Popover menus */
+.menu {
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-1);
+}
+.menu__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  padding-inline: var(--s-2);
+}
+.menu__lead {
+  margin-top: calc(var(--s-2) * -1);
+  padding-inline: var(--s-2);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.menu__back {
+  justify-self: start;
+  margin-bottom: calc(var(--s-2) * -1);
+}
+.menu__group {
+  border: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s-2);
+}
+.menu__legend {
+  padding: 0 var(--s-2) var(--s-2);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.menu__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  padding-inline: var(--s-1);
+}
+.menu__chips .chip {
+  min-height: 2.25rem;
+  font-size: var(--fs-xs);
+}
+.menu__shelves {
+  display: grid;
+  gap: 2px;
+}
+.shelf-opt {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 2.75rem;
+  padding: 0 0.75rem;
+  border-radius: var(--r-md);
+  text-align: left;
+  font-size: var(--fs-sm);
+  transition: background-color var(--t-fast) ease;
+}
+.shelf-opt[aria-checked='true'] {
+  background: rgb(var(--lit-rgb) / 0.12);
+}
+@media (hover: hover) and (pointer: fine) {
+  .shelf-opt:hover {
+    background: var(--surface-3);
+  }
+}
+.shelf-opt__dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-3);
+  display: grid;
+  place-items: center;
+}
+.shelf-opt[aria-checked='true'] .shelf-opt__dot {
+  border-color: var(--lit);
+}
+.shelf-opt[aria-checked='true'] .shelf-opt__dot::after {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--lit);
+}
+.shelf-opt__plus {
+  width: 1rem;
+  height: 1rem;
+  color: var(--lit);
+}
+.shelf-opt__name {
+  flex: 1;
+}
+.shelf-opt__count {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.menu__new {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-2) 0;
+}
+.menu__input {
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-2);
+  background: var(--bg-deep);
+}
+.menu__input:focus-visible {
+  border-color: var(--lit);
+  box-shadow: 0 0 0 3px rgb(var(--lit-rgb) / 0.18);
+}
+.menu__suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1) var(--s-2);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.menu__suggestion {
+  min-height: 2rem;
+  padding: 0 0.6rem;
+  border-radius: var(--r-pill);
+  background: rgb(var(--lit-rgb) / 0.1);
+  color: var(--text);
+  font-size: var(--fs-xs);
+  transition: background-color var(--t-fast) ease, transform var(--t-press) var(--ease-out);
+}
+.menu__suggestion:active {
+  transform: scale(0.96);
+}
+@media (hover: hover) and (pointer: fine) {
+  .menu__suggestion:hover {
+    background: rgb(var(--lit-rgb) / 0.2);
+  }
+}
+.menu__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--line);
+}

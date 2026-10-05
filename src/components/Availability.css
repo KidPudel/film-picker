@@ -1,0 +1,40 @@
+.avail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-size: var(--fs-xs);
+  font-weight: 560;
+  white-space: nowrap;
+}
+.avail svg {
+  width: 0.95em;
+  height: 0.95em;
+  flex: none;
+}
+.avail--inline.avail--included { color: var(--text-3); }
+.avail--inline.avail--premium { color: var(--lit); }
+.avail--inline.avail--rent { color: var(--warn); }
+.avail--inline.avail--soon { color: var(--text-2); }
+
+/* Ribbon: sits on top of the cover so expectations are set before the click */
+.avail--ribbon {
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--r-sm);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(6px);
+}
+.avail--ribbon.avail--premium {
+  background: linear-gradient(135deg, #f7d18a, #d9952f);
+  color: #2a1803;
+}
+.avail--ribbon.avail--rent {
+  background: rgb(20 15 10 / 0.86);
+  color: #ffd99a;
+  border: 1px solid rgb(255 217 154 / 0.35);
+}
+.avail--ribbon.avail--soon {
+  background: rgb(244 237 227 / 0.94);
+  color: #1d150d;
+}

@@ -1,0 +1,31 @@
+.projector {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100lvh;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+  /* Its own transition group: the live canvas keeps rendering the warp during page changes. */
+  view-transition-name: projector;
+}
+::view-transition-old(projector) {
+  display: none;
+}
+::view-transition-new(projector) {
+  animation: none;
+}
+:root[data-theme='light'] .projector {
+  display: none;
+}
+/* No WebGL: a still, soft beam so the hall never looks empty. */
+:root.no-webgl .projector {
+  display: none;
+}
+:root.no-webgl body {
+  background:
+    radial-gradient(40% 30% at 30% 85%, rgb(170 230 255 / 0.18), transparent 70%),
+    conic-gradient(from 10deg at 30% 85%, transparent 0deg, rgb(140 220 255 / 0.12) 12deg, rgb(255 255 255 / 0.08) 30deg, rgb(120 200 255 / 0.1) 46deg, transparent 58deg),
+    var(--bg);
+  background-attachment: fixed;
+}

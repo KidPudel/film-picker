@@ -1,0 +1,145 @@
+/* Segmented control with a sliding thumb (moves on change — state indication) */
+.seg {
+  display: grid;
+  gap: var(--s-2);
+}
+.seg__label {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.seg__track {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  padding: 3px;
+  border-radius: var(--r-pill);
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  isolation: isolate;
+}
+.seg__thumb {
+  position: absolute;
+  z-index: -1;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--n));
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  box-shadow: inset 0 1px 0 rgb(var(--beam) / 0.1), 0 1px 3px rgb(0 0 0 / 0.3);
+  transform: translateX(calc(100% * var(--i)));
+  transition: transform var(--t-mid) var(--ease-out);
+}
+.seg__opt {
+  min-height: 2.5rem;
+  padding: 0 0.75rem;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  transition: color var(--t-fast) ease;
+}
+.seg__opt svg {
+  width: 1.05em;
+  height: 1.05em;
+}
+.seg__opt[aria-checked='true'] {
+  color: var(--text);
+}
+.seg--sm .seg__opt {
+  min-height: 2.25rem;
+  font-size: var(--fs-xs);
+  padding: 0 0.6rem;
+}
+@media (hover: hover) and (pointer: fine) {
+  .seg__opt:hover {
+    color: var(--text);
+  }
+}
+
+/* Switch */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 2.75rem;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  text-align: left;
+}
+.switch__track {
+  flex: none;
+  position: relative;
+  width: 2.5rem;
+  height: 1.5rem;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  transition: background-color var(--t-fast) ease, border-color var(--t-fast) ease;
+}
+.switch__dot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--text-2);
+  transition: transform var(--t-mid) var(--ease-out), background-color var(--t-fast) ease;
+}
+.switch[aria-checked='true'] .switch__track {
+  background: rgb(var(--lit-rgb) / 0.25);
+  border-color: rgb(var(--lit-rgb) / 0.7);
+}
+.switch[aria-checked='true'] .switch__dot {
+  transform: translateX(1rem);
+  background: var(--lit);
+}
+.switch[aria-checked='true'] .switch__label {
+  color: var(--text);
+}
+
+/* Film-strip meter */
+.meter {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, auto) auto 1fr;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--fs-sm);
+}
+.meter__label {
+  color: var(--text-2);
+}
+.meter__strip {
+  --meter: var(--lit);
+  display: inline-flex;
+  gap: 3px;
+  padding: 4px 5px;
+  border-radius: 4px;
+  background: var(--bg-deep);
+  /* sprocket holes */
+  background-image:
+    radial-gradient(circle at 50% 50%, var(--surface-3) 1.2px, transparent 1.6px);
+  background-size: 7px 100%;
+  background-repeat: repeat-x;
+  background-position: 0 -6px;
+}
+.meter__frame {
+  width: 1rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  background: var(--surface-3);
+  transition: background-color var(--t-mid) ease;
+}
+.meter__frame.is-on {
+  background: var(--meter);
+  box-shadow: 0 0 8px -1px color-mix(in oklab, var(--meter) 70%, transparent);
+}
+.meter__text {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}

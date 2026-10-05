@@ -1,0 +1,151 @@
+/*
+ * Design tokens — «Полутьма».
+ * World: a pitch-dark hall where light is the only colour. The projector beam
+ * (WebGL, see Projector.tsx) carries the colours of the film; the interface
+ * itself stays neutral — white type, hairlines, one cool highlight from the
+ * beam (--lit). Red velvet appears only on the seats.
+ * Every colour in components comes from here so light theme and high contrast work.
+ */
+:root {
+  --bg: #000000;
+  --bg-deep: #000000;
+  --surface: #0d0e12;
+  --surface-2: #16181e;
+  --surface-3: #22252d;
+  --scrim: rgb(0 0 0 / 0.72);
+
+  --line: rgb(255 255 255 / 0.08);
+  --line-2: rgb(255 255 255 / 0.15);
+  --line-3: rgb(255 255 255 / 0.28);
+
+  /* AA on black: text 19:1, text-2 11:1, text-3 6.6:1 */
+  --text: #f2f5fa;
+  --text-2: #bac2d0;
+  --text-3: #8a93a6;
+  --text-inverse: #000000;
+
+  /* Light */
+  --beam: 214 240 255;
+  --lit: #a6ecff;
+  --lit-rgb: 166 236 255;
+  --velvet: #b3122f;
+
+  /* Semantic (always paired with an icon) */
+  --ok: #8fe0b4;
+  --warn: #ffd486;
+  --no: #ff9a9a;
+  --ok-bg: rgb(143 224 180 / 0.12);
+  --warn-bg: rgb(255 212 134 / 0.12);
+  --no-bg: rgb(255 154 154 / 0.12);
+
+  /* Ticket stock */
+  --paper: #eef2f8;
+  --paper-ink: #0b0e16;
+  --paper-line: rgb(11 14 22 / 0.22);
+
+  /* Type: one family. Geologica carries both the giant sentence and the UI. */
+  --font-display: 'Geologica Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ui: var(--font-display);
+  --font-mono: var(--font-display);
+
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: clamp(2rem, 1.4rem + 2.2vw, 3rem);
+  --fs-3xl: clamp(2.75rem, 1.6rem + 4.4vw, 5.75rem);
+  --fs-hero: clamp(1.75rem, 1.1rem + 2.4vw, 3.1rem);
+
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2.25rem;
+  --s-7: 3.5rem;
+  --s-8: 6rem;
+  --gutter: clamp(1.25rem, 0.6rem + 3vw, 4rem);
+  --maxw: 92rem;
+
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  --shadow-1: 0 2px 6px rgb(0 0 0 / 0.5);
+  --shadow-2: 0 10px 30px -8px rgb(0 0 0 / 0.7);
+  --shadow-3: 0 30px 80px -20px rgb(0 0 0 / 0.85);
+
+  /* Motion (Emil Kowalski / Apple curves) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --t-press: 140ms;
+  --t-fast: 180ms;
+  --t-mid: 260ms;
+
+  --focus: 0 0 0 2px var(--bg), 0 0 0 4px var(--lit);
+  --beam-strength: 1;
+  color-scheme: dark;
+}
+
+/* «Свет в зале» — the lights are on: the beam disappears, paper-white room */
+:root[data-theme='light'] {
+  --bg: #f3f4f7;
+  --bg-deep: #e7e9ef;
+  --surface: #ffffff;
+  --surface-2: #eef0f5;
+  --surface-3: #e1e4ec;
+  --scrim: rgb(20 22 30 / 0.45);
+  --line: rgb(10 14 30 / 0.1);
+  --line-2: rgb(10 14 30 / 0.18);
+  --line-3: rgb(10 14 30 / 0.32);
+  --text: #0b0e16;
+  --text-2: #3c4456;
+  --text-3: #5d6578;
+  --text-inverse: #ffffff;
+  --beam: 0 90 140;
+  --lit: #0b6f99;
+  --lit-rgb: 11 111 153;
+  --ok: #1d6b44;
+  --warn: #8a5a00;
+  --no: #b02a2a;
+  --ok-bg: rgb(29 107 68 / 0.1);
+  --warn-bg: rgb(138 90 0 / 0.1);
+  --no-bg: rgb(176 42 42 / 0.08);
+  --paper: #ffffff;
+  --shadow-1: 0 2px 6px rgb(10 14 30 / 0.08);
+  --shadow-2: 0 10px 30px -10px rgb(10 14 30 / 0.2);
+  --shadow-3: 0 30px 80px -24px rgb(10 14 30 / 0.3);
+  --beam-strength: 0;
+  color-scheme: light;
+}
+
+:root[data-contrast='more'] {
+  --line: rgb(255 255 255 / 0.3);
+  --line-2: rgb(255 255 255 / 0.45);
+  --line-3: rgb(255 255 255 / 0.65);
+  --text-2: #dde3ee;
+  --text-3: #c3cad8;
+}
+:root[data-theme='light'][data-contrast='more'] {
+  --line: rgb(10 14 30 / 0.4);
+  --line-2: rgb(10 14 30 / 0.55);
+  --line-3: rgb(10 14 30 / 0.75);
+  --text-2: #1c2230;
+  --text-3: #2c3344;
+}
+@media (prefers-contrast: more) {
+  :root:not([data-contrast='normal']):not([data-theme='light']) {
+    --line: rgb(255 255 255 / 0.3);
+    --line-2: rgb(255 255 255 / 0.45);
+    --text-2: #dde3ee;
+    --text-3: #c3cad8;
+  }
+}
+
+:root[data-text='large'] {
+  font-size: 112.5%;
+}
