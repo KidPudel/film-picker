@@ -5,7 +5,6 @@ import type { Film } from '../data/types';
 import { useStore } from '../store/useStore';
 import { answer, detectIntent, QUESTIONS, type Answer, type Intent } from '../lib/assistant';
 import { SPOILER_LEVELS } from '../data/vocab';
-import { SpoilerControl } from './SettingsPanel';
 import './Assistant.css';
 
 interface Turn {
@@ -73,9 +72,21 @@ export function Assistant({ film }: { film: Film }) {
 
   return (
     <div className="asst">
-      <div className="asst__meter">
-        <SpoilerControl compact />
-      </div>
+      <p className="asst__level">
+        Отвечает с учётом уровня спойлеров «{SPOILER_LEVELS[spoiler].label}» — его можно поменять в разделе{' '}
+        <a
+          href="#story"
+          className="linklike"
+          onClick={(e) => {
+            e.preventDefault();
+            document.getElementById('story')?.scrollIntoView({ block: 'start' });
+            document.getElementById('story-h')?.focus({ preventScroll: true });
+          }}
+        >
+          «О чём фильм»
+        </a>
+        .
+      </p>
 
       {turns.length > 0 && (
         <ol className="asst__log" ref={logRef} aria-live="polite">

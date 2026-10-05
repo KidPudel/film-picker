@@ -359,8 +359,6 @@
 .fsec__head {
   display: grid;
   gap: var(--s2);
-  justify-items: center;
-  text-align: center;
 }
 .fsec__title {
   font-size: var(--fs-2xl);
@@ -484,13 +482,10 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s2);
+  gap: 0.1rem 1rem;
 }
 .story__themes li {
-  padding: 0.25rem 0.6rem;
-  border-radius: var(--r-sm);
-  background: var(--z3);
-  color: var(--text-2);
+  color: var(--text-3);
   font-size: var(--fs-sm);
 }
 .story__synopsis {
@@ -691,8 +686,6 @@
 .people {
   display: grid;
   gap: var(--s5);
-  justify-items: center;
-  text-align: center;
 }
 .people__dir {
   display: grid;

@@ -290,13 +290,14 @@ function DialogHeader({ id, title, subtitle, onClose, bare }: { id: string; titl
 }
 
 function useRestoreFocus() {
+  // Captured during render: by the time effects run, `inert` on #root has already dropped focus to <body>.
+  const [prev] = useState(() => document.activeElement as HTMLElement | null);
   useEffect(() => {
-    const prev = document.activeElement as HTMLElement | null;
     return () => {
       // Wait for inert to be lifted before restoring.
       requestAnimationFrame(() => prev?.isConnected && prev.focus({ preventScroll: true }));
     };
-  }, []);
+  }, [prev]);
 }
 
 function PhoneDialog({ onClose, title, subtitle, children, className, bare }: DialogProps) {

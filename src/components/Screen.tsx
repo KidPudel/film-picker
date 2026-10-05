@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import { useReducedMotion } from 'motion/react';
 import type { Film } from '../data/types';
 import { useProjector } from '../store/useProjector';
+import { useStore } from '../store/useStore';
 import './Screen.css';
 
 /**
@@ -17,7 +18,8 @@ export function FilmBackdrop({ film, onSwipe, className = '' }: { film: Film; on
   const frames = film.stills.length
     ? film.stills.map((s) => ({ src: s.src1280, srcSet: `${s.src640} 640w, ${s.src1280} 1280w`, beam: s.beam, mean: s.mean }))
     : [{ src: film.poster.src720, srcSet: `${film.poster.src360} 360w, ${film.poster.src720} 720w`, beam: film.poster.beam, mean: film.poster.mean }];
-  const reduce = useReducedMotion();
+  // Either the system preference or the in-app «Меньше движения» stops the frames advancing.
+  const reduce = useReducedMotion() || useStore.getState().prefs.motion === 'reduce';
   const [i, setI] = useState(0);
   const [playing, setPlaying] = useState(!reduce);
   const [held, setHeld] = useState(false);

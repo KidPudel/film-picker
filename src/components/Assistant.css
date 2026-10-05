@@ -90,6 +90,7 @@
 }
 .asst__form:focus-within {
   border-color: var(--text-bright);
+  box-shadow: 0 1px 0 var(--text-bright);
 }
 .asst__form input {
   flex: 1;
@@ -129,4 +130,9 @@
   color: var(--text-3);
   font-size: var(--fs-xs);
   max-width: 62ch;
+}
+
+.asst__level {
+  color: var(--text-3);
+  font-size: var(--fs-sm);
 }
